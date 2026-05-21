@@ -1,0 +1,901 @@
+{
+  "$schema_version": "0.5",
+  "$note": "Source of truth для контента сайта. Менять здесь - менять на сайте. TODO отмечены явно, см. TODO.md для полного списка.",
+  "$updated": "2026-04-24",
+  "event": {
+    "name": "Balkans Web3 & iGaming Awards",
+    "short_name": "BWiGA",
+    "edition": "Adriatic Edition",
+    "date_iso": "2026-09-30",
+    "date_display": "September 30th, Wednesday",
+    "venue": {
+      "name": "Avala Resort & Villas",
+      "short_name": "Avala Hotel",
+      "address": "2 Mediteranska, Budva 85310, Montenegro",
+      "city": "Budva",
+      "country": "Montenegro",
+      "description": "A luxurious hotel with glass walls and ceilings, a swimming pool, and a private beach right next to the walls of Budva's old town. The perfect venue for an awards ceremony for the industry's top performers and a garden party with a bar!",
+      "signature_feature": "Hall with glass roof and glass floor over pebble bed. Daylight by day, blue-lit ceiling at sunset. This is the visual hook of the venue - lean into it in the design.",
+      "photos": [
+        "assets/venue/avala-hall-audience.webp",
+        "assets/venue/avala-hall-panel-stage.webp",
+        "assets/venue/avala-hall-evening-talk.webp",
+        "assets/venue/avala-hall-keynote.webp",
+        "assets/venue/avala-lobby-signage.webp",
+        "assets/venue/avala-hotel-budva-01.webp",
+        "assets/venue/avala-hotel-budva-02.webp"
+      ],
+      "link_website": "https://www.avalaresort.com/",
+      "link_maps": "https://www.google.com/maps/place/?q=place_id:ChIJy4agOpfUTRMRxuqh4v3Qp6I",
+      "coordinates": {
+        "lat": 42.2785625,
+        "lng": 18.8351875
+      },
+      "phone": "+382 69 369 115"
+    }
+  },
+  "navigation": [
+    {
+      "id": "about",
+      "label": "About Awards"
+    },
+    {
+      "id": "nominations",
+      "label": "Nominations"
+    },
+    {
+      "id": "speakers",
+      "label": "Speakers"
+    },
+    {
+      "id": "schedule",
+      "label": "Schedule"
+    },
+    {
+      "id": "registration",
+      "label": "Registration"
+    },
+    {
+      "id": "partners",
+      "label": "Partners"
+    },
+    {
+      "id": "location",
+      "label": "Location"
+    },
+    {
+      "id": "contacts",
+      "label": "Contacts"
+    }
+  ],
+  "brand": {
+    "primary_color_hex": "#4B78EC",
+    "primary_color_note": "Extracted from official BWiGA SVG logo. Same blue appears on the statuette and on past event stage branding.",
+    "logo_mark": "B with a diamond/star cutout in the center - same shape as the physical statuette.",
+    "logo_files": {
+      "full_svg": "assets/logo/bwiga-logo.svg",
+      "full_pdf": "assets/logo/bwiga-logo.pdf",
+      "icon_ai": "assets/logo/bwiga-icon.ai",
+      "icon_extraction_todo": "Extract clean icon-only SVG from bwiga-icon.ai for favicon / navigation / loaders / animation."
+    },
+    "wordmark": "BWIGA (black) + 'Balkans Web3 & iGaming Awards' (in brand blue)",
+    "identity_note": "The 2025 identity (sailboat-in-oval with laurels, 'ADRIATIC WEB3 & IGAMING AWARDS') is being retired for the new edition. Keep it only on the /2025 archive subdomain. New 2026 identity is the B-with-diamond mark.",
+    "vibe_keywords": [
+      "premium gala",
+      "Web3",
+      "iGaming",
+      "Adriatic evening",
+      "glass & light",
+      "diamond"
+    ],
+    "visual_hints": [
+      "Hero: rotating 3D model of the statuette. Per Alexey: 'grains play blue when rotating; the diamond mark is printed on the front, white backing behind - gives depth'. This fits WebGL/three.js perfectly.",
+      "Glass motif links venue (glass roof/floor at Avala) with statuette (acrylic) with logo diamond cutout - it's the same thread, use it.",
+      "Evening palette: deep blue sky + brand blue #4B78EC + warm accent lights (as seen in past event photos - Porto Montenegro ballroom with blue/yellow uplighting)."
+    ]
+  },
+  "hero": {
+    "name_block": "BWiGA",
+    "subtitle": "Balkans Web3 & iGaming Awards",
+    "date_line": "September 30th, Wednesday",
+    "location_line_1": "Budva, Montenegro",
+    "location_line_2": "Avala Hotel",
+    "tagline_primary": "Only Premium Web3 & iGaming International Event in region with Awards Ceremony and Party!",
+    "tagline_secondary": "Founders and C-level on board. Our attendees are real decision makers!",
+    "stats_line": "30 nominations, 30 countries, 30 speakers, 100 companies",
+    "cta_primary": {
+      "label": "Join the Whitelist",
+      "action": "scroll:#registration"
+    },
+    "cta_secondary": {
+      "label": "Submit for a Nomination",
+      "action": "scroll:#nominations"
+    }
+  },
+  "about": {
+    "videos": [
+      {
+        "title": "Montenegro 2025",
+        "youtube": "https://youtu.be/kIbMj-zygCI"
+      },
+      {
+        "title": "Serbia 2026",
+        "youtube": "https://youtu.be/lYH-xv6glKM?si=emNnZL8-uRsqVi1t"
+      }
+    ],
+    "gallery": {
+      "placement_note": "Carousel directly under the two video reports. ~20 photos from Belgrade and Tivat mixed. Alexey: 'main thing - faces and the hall, to build trust'.",
+      "curation_hint": "Mix the three moods: (a) daytime networking on the marina terrace, (b) keynotes and panels on stage, (c) evening - award ceremony, live band under the olive tree, afterparty. Don't cluster by mood in the carousel - interleave so each slide feels different.",
+      "images": [
+        "assets/event-photos/adriatic-2025-ceremony.webp",
+        "assets/event-photos/adriatic-2025-stage-partners.webp",
+        "assets/event-photos/adriatic-2025-stage-gamification.webp",
+        "assets/event-photos/adriatic-2025-keynote-stage.webp",
+        "assets/event-photos/adriatic-2025-live-band.webp",
+        "assets/event-photos/adriatic-2025-evening-venue-aerial.webp",
+        "assets/event-photos/adriatic-2025-afterparty-01.webp",
+        "assets/event-photos/adriatic-2025-bar-portrait.webp",
+        "assets/event-photos/adriatic-2025-marina-networking.webp",
+        "assets/event-photos/adriatic-2025-daytime-networking.webp",
+        "assets/event-photos/adriatic-2025-terrace-conversation.webp",
+        "assets/event-photos/adriatic-2025-attendees-group.webp",
+        "assets/event-photos/adriatic-2025-catering-desserts.webp",
+        "assets/event-photos/IMG_4053.webp",
+        "assets/event-photos/IMG_4055.webp",
+        "assets/event-photos/IMG_4056.webp",
+        "assets/event-photos/IMG_4057.webp",
+        "assets/event-photos/IMG_4058.webp",
+        "assets/event-photos/IMG_4061.webp",
+        "assets/event-photos/IMG_4062.webp",
+        "assets/event-photos/IMG_4064.webp",
+        "assets/event-photos/IMG_4066.webp",
+        "assets/event-photos/IMG_4069.webp",
+        "assets/event-photos/IMG_4070.webp",
+        "assets/event-photos/IMG_4072.webp",
+        "assets/event-photos/IMG_4073.webp",
+        "assets/event-photos/IMG_4074.webp",
+        "assets/event-photos/IMG_4075.webp",
+        "assets/event-photos/IMG_4076.webp"
+      ],
+      "total_count": 29
+    },
+    "body": [
+      "Our conference has been held for two years in the Balkans, in Serbia and Montenegro.",
+      "Previously, our agency, Lead Volume, organized blockchain and digital marketing events in Turkey, Kazakhstan, and Russia.",
+      "Our team has held over 20 conferences in five countries over the past 10 years.",
+      "BWiGA brings together participants from more than 30 countries, including guests from Cyprus, England, India, Turkey, Hungary, Georgia, Ukraine, Germany, Bulgaria, Russia, Norway, Croatia, the Czech Republic, Latvia, and many others.",
+      "BWiGA has become a landmark event for the region in the web3 and iGaming industries, focusing on awards for the best projects and industry figures. This unique event is covered by media outlets such as Business Insider, Benzinga, and CoinMarketCap.",
+      "BWiGA typically awards over 30 winners per event, and this competition features over 100 nominees from around the world!"
+    ],
+    "media_mentions": [
+      {
+        "name": "Business Insider",
+        "url": "https://markets.businessinsider.com/news/currencies/bwiga-awarded-over-30-nominees-in-belgrade-1035993680"
+      },
+      {
+        "name": "Benzinga",
+        "url": "https://www.benzinga.com/pressreleases/26/02/50876944/bwiga-2026-announces-web3-and-igaming-awards-ceremony-in-belgrade"
+      },
+      {
+        "name": "Techbullion",
+        "url": "https://techbullion.com/bwiga-awards-brings-together-100-global-web3-and-ai-projects/"
+      },
+      {
+        "name": "CoinMarketCap",
+        "url": "https://coinmarketcap.com/community/articles/69a14133095eb16805224561/"
+      },
+      {
+        "name": "Binance",
+        "url": "https://www.binance.com/en/square/post/297153121179185"
+      },
+      {
+        "name": "Bitget (Video Report)",
+        "url": "https://www.instagram.com/reel/DQauhHdD0Xm/?igsh=MWxrZDJvbHhqZTk5Nw=="
+      },
+      {
+        "name": "Bitget News",
+        "url": "https://www.bitget.com/amp/news/detail/12560605173933"
+      },
+      {
+        "name": "Coinstelegram - Top-20",
+        "url": "https://coinstelegram.com/rating/the-people-running-crypto-in-2026-top-20-you-need-to-know/"
+      },
+      {
+        "name": "iGaming News - Top-5 Events",
+        "url": "https://igaming.news/blog/2025-12-24/top-igaming-web3-events-to-watch-in-2026"
+      },
+      {
+        "name": "Coingabbar",
+        "url": "https://www.coingabbar.com/en/crypto-press-release/adriatic-web3-and-igaming-awards-2025-montenegro"
+      }
+    ],
+    "audience": [
+      "IT innovators",
+      "Developers",
+      "Web3 Projects",
+      "FinTech Platforms",
+      "Crypto Traders",
+      "iGaming Providers",
+      "Exchanges",
+      "AI Agencies",
+      "Digital Marketers",
+      "Affiliate Managers",
+      "DeFi Platforms",
+      "Blockchain Games",
+      "Gamedev Studios",
+      "Cybersecurity Agencies",
+      "Consulting Agencies",
+      "Recruiting Companies",
+      "Mediabuying Agencies"
+    ],
+    "topics": [
+      "Promotion for web3 projects",
+      "Marketing Campaign for iGaming",
+      "FinTech Solutions-2026",
+      "Trading Strategy in 2026",
+      "Fund Raising during crypto winter",
+      "Traffic Sources for Crypto and iGaming projects",
+      "Innovative Solutions for web3 and iGaming",
+      "AI Trends-2026",
+      "Corporate Security as trend-2026",
+      "Cybersecurity for Crypto and iGaming",
+      "Affiliate Marketing perspective in 2026"
+    ]
+  },
+  "statuette": {
+    "description": "Acrylic award shaped as the BWiGA logomark (letter B with diamond cutout). Blue print on the front face, white backing on the reverse - gives optical depth. Edges catch blue highlights when rotating.",
+    "alexey_notes": [
+      "Статуэткой поиграть можно, она дает объем за счет оклейки надписи сзади стекла",
+      "Грани играют синим при вращении",
+      "А сзади белая спина наклейки. Синий цвет только спереди"
+    ],
+    "implementation_hint": "Prime candidate for hero 3D widget: rotating WebGL model with glass material, front-face print, edge highlight - matches Chipsa's strengths directly.",
+    "photos": [
+      "assets/statuette/statuette-front.jpg",
+      "assets/statuette/statuette-angle-01.jpg",
+      "assets/statuette/statuette-angle-02.jpg",
+      "assets/statuette/statuette-angle-03.jpg"
+    ],
+    "design_source": "assets/statuette/statuette-design.pdf",
+    "example_nomination_plate": "BWiGA-2026, KULA BELGRADE, TOP MEDIABUYING COMPANY, EVAMOBI (from sample photos)"
+  },
+  "nominations": {
+    "submission_flow": "Single 'Submit for a Nomination' button -> form: nomination selector + company name + website + contact email -> crypto payment via processing.",
+    "note_dynamic": "List can expand - special nominations may be added later.",
+    "categories": [
+      {
+        "slug": "igaming-provider",
+        "name": "iGaming Provider of the year"
+      },
+      {
+        "slug": "crypto-casino",
+        "name": "Crypto Casino of the year"
+      },
+      {
+        "slug": "affiliate-program",
+        "name": "Affiliate Program of the year"
+      },
+      {
+        "slug": "best-blockchain-game",
+        "name": "Best Blockchain Game"
+      },
+      {
+        "slug": "best-crypto-exchange",
+        "name": "Best Crypto Exchange"
+      },
+      {
+        "slug": "best-gamedev-studio",
+        "name": "Best Gamedev Studio"
+      },
+      {
+        "slug": "most-innovative-web3",
+        "name": "The most innovative web3 project"
+      },
+      {
+        "slug": "best-payment-solution",
+        "name": "Best Payment Solution"
+      },
+      {
+        "slug": "best-software-dev",
+        "name": "Best Software Development"
+      },
+      {
+        "slug": "igaming-influencer",
+        "name": "iGaming Influencer of the year"
+      },
+      {
+        "slug": "ceo-of-the-year",
+        "name": "CEO of the year"
+      },
+      {
+        "slug": "founder-of-the-year",
+        "name": "Founder of the year"
+      },
+      {
+        "slug": "best-fintech",
+        "name": "Best Fintech Project"
+      },
+      {
+        "slug": "crypto-influencer",
+        "name": "Crypto Influencer of the year"
+      },
+      {
+        "slug": "mediabuying-agency",
+        "name": "Mediabuying Agency of the year"
+      },
+      {
+        "slug": "recruiting-agency",
+        "name": "Recruiting Agency of the year"
+      },
+      {
+        "slug": "rising-star-provider",
+        "name": "Rising Star Game Provider"
+      },
+      {
+        "slug": "cmo-of-the-year",
+        "name": "CMO of the year"
+      },
+      {
+        "slug": "consulting-agency",
+        "name": "Consulting Agency of the year"
+      },
+      {
+        "slug": "igaming-expert",
+        "name": "iGaming Expert of the year"
+      },
+      {
+        "slug": "web3-expert",
+        "name": "Web3 Expert of the year"
+      },
+      {
+        "slug": "leader-of-industry",
+        "name": "Leader of Industry"
+      },
+      {
+        "slug": "best-seo-expert",
+        "name": "Best SEO Expert"
+      },
+      {
+        "slug": "best-affiliate-manager",
+        "name": "Best Affiliate Manager"
+      },
+      {
+        "slug": "star-of-industry",
+        "name": "Star of the industry"
+      },
+      {
+        "slug": "rising-star",
+        "name": "Rising Star"
+      },
+      {
+        "slug": "best-pr-agency",
+        "name": "Best PR Agency"
+      },
+      {
+        "slug": "best-merch",
+        "name": "Best merch of the year"
+      }
+    ]
+  },
+  "competition_timeline": [
+    {
+      "date_iso": "2026-05-15",
+      "date_display": "May 15",
+      "label": "Submission of Nominees' Applications"
+    },
+    {
+      "date_iso": "2026-09-15",
+      "date_display": "September 15",
+      "label": "Online Voting on the website"
+    },
+    {
+      "date_iso": "2026-09-28",
+      "date_display": "September 28",
+      "label": "Final Decision of the Jury"
+    },
+    {
+      "date_iso": "2026-09-30",
+      "date_display": "September 30",
+      "label": "Awards Ceremony"
+    }
+  ],
+  "speakers": {
+    "titles_source_note": "Titles pulled from adriaticawards.com (previous edition speakers) and BWiGA Belgrade 2026 press releases (Benzinga, NatLawReview). Verify with Alexey before publishing - people may have moved.",
+    "jury": [
+      {
+        "slug": "alexey-nasybullin",
+        "name": "Alexey Nasybullin",
+        "photo": "assets/speakers/jury/alexey-nasybullin.webp",
+        "title": "Marketer, PhD in sociology. Organizer of BWiGA."
+      },
+      {
+        "slug": "andrey-insarov",
+        "name": "Andrey Insarov",
+        "photo": "assets/speakers/jury/andrey-insarov.webp",
+        "title": "Founder of it.com Domains, Forbes Council"
+      },
+      {
+        "slug": "laszlo-kellner",
+        "name": "Laszlo Kellner",
+        "photo": "assets/speakers/jury/laszlo-kellner.webp",
+        "title": "Co-founder at INFI MultiChain CDEX Exchange"
+      },
+      {
+        "slug": "isroilzhon-orifzhonov",
+        "name": "Isroilzhon Orifzhonov",
+        "photo": "assets/speakers/jury/isroilzhon-orifzhonov.webp",
+        "photo_todo": "Alexey is sending a fresh portrait; temporary photo available at the URL above",
+        "title": "CTO at CryptoCat",
+        "photo_source_url_archived": "https://adriaticawards.com/dist/speaker/Isroil.png"
+      },
+      {
+        "slug": "dima-mikhailov",
+        "name": "Dima Mikhailov",
+        "photo": "assets/speakers/jury/dima-mikhailov.webp",
+        "title": "Founding Partner at DMTech.vc"
+      }
+    ],
+    "speakers": [
+      {
+        "slug": "tobias-jack-lewis",
+        "name": "Tobias Jack Lewis",
+        "photo": "assets/speakers/speakers/tobias-jack-lewis.webp",
+        "title": "Head of BD & Partnerships at The Open Platform / Wallet in Telegram"
+      },
+      {
+        "slug": "paul-lalovich",
+        "name": "Dr. Paul Lalovich",
+        "photo": "assets/speakers/speakers/paul-lalovich.webp",
+        "title": "Managing Partner at Agile Dynamics. Blockchain & Web3 consultant, PhD candidate."
+      },
+      {
+        "slug": "vit-jedlicka",
+        "name": "Vit Jedlicka",
+        "photo": "assets/speakers/speakers/vit-jedlicka.webp",
+        "photo_todo": "Maksim is looking; fallback photo available at the URL above from Adriatic 2025",
+        "title": "President of Free Republic of Liberland",
+        "photo_source_url_archived": "https://adriaticawards.com/dist/img/Vit.png"
+      },
+      {
+        "slug": "anina-milanovic",
+        "name": "Anina Milanovic",
+        "photo": "assets/speakers/speakers/anina-milanovic.webp",
+        "title": "Head of International Cooperation and Development Department at Securities Commission of Serbia"
+      },
+      {
+        "slug": "andrew-builov",
+        "name": "Andrew Builov",
+        "photo": "assets/speakers/speakers/andrew-builov.webp",
+        "title": "CEO at SEO Restore. iGaming SEO expert."
+      },
+      {
+        "slug": "zoran-djikanovic",
+        "name": "Prof. Zoran Djikanovic",
+        "photo": "assets/speakers/speakers/zoran-djikanovic.webp",
+        "title": "Associate Professor of Finance & Banking, University of Donja Gorica (UDG). PhD in economics. Head of 'UDG Blockchain Učionice'."
+      },
+      {
+        "slug": "alex-belov",
+        "name": "Alex Belov",
+        "photo": "assets/speakers/speakers/alex-belov.webp",
+        "title": "Founder of Coinstelegram. Forbes 30 Under 30."
+      },
+      {
+        "slug": "marko-matanovic",
+        "name": "Marko Matanovic",
+        "photo": "assets/speakers/speakers/marko-matanovic.webp",
+        "title": "CEO at ECD",
+        "title_note": "adriaticawards.com says 'ECD'; one Benzinga release says 'EDC' - confirm with Alexey."
+      },
+      {
+        "slug": "mina-vucinic",
+        "name": "Mina Vucinic",
+        "photo": "assets/speakers/speakers/mina-vucinic.webp",
+        "title": "Head of BD & Partnerships at Transcend Labs"
+      },
+      {
+        "slug": "dejan-vranjanin",
+        "name": "Dejan Vranjanin",
+        "photo": "assets/speakers/speakers/dejan-vranjanin.webp",
+        "title": "Head of Account Development at Endorphina"
+      }
+    ],
+    "program_status_label": "Program under development",
+    "to_be_speaker_form": {
+      "cta": "To be a Speaker",
+      "fields": [
+        "name",
+        "linkedin",
+        "website",
+        "email",
+        "phone"
+      ]
+    }
+  },
+  "schedule": {
+    "date_display": "September 30th",
+    "time_range": "14:00 - 23:00",
+    "status_label": "Program under development!",
+    "items": [
+      {
+        "time": "14:00 - 18:00",
+        "title": "Panel Discussions and Speakers' keynotes"
+      },
+      {
+        "time": "18:00 - 19:00",
+        "title": "INFI Multichain Accelerator"
+      },
+      {
+        "time": "19:00 - 20:00",
+        "title": "Awards Ceremony"
+      },
+      {
+        "time": "20:00 - 23:00",
+        "title": "After Party"
+      }
+    ]
+  },
+  "registration": {
+    "tickets": [
+      {
+        "slug": "standard",
+        "name": "Standard Ticket",
+        "price_display": "€200",
+        "price_value": 200,
+        "price_currency": "EUR",
+        "includes": [
+          "Conference Hall",
+          "Awards Ceremony",
+          "Evening Party"
+        ]
+      }
+    ],
+    "whitelist_form": {
+      "cta": "Join the Whitelist",
+      "fields": [
+        "name",
+        "website",
+        "email",
+        "linkedin"
+      ],
+      "delivery": "TODO: email vs Google Sheet - decide at implementation"
+    },
+    "payment_note": "Crypto only (via processor of Alexey's choice). Local ticket aggregator possibly later."
+  },
+  "partners": {
+    "directive_note": "Alexey: 'keep everyone except Balkans Crypto'. List below combines confirmed sponsors from Adriatic Awards 2025 (adriaticawards.com) and BWiGA Belgrade 2026 (visible on stage banner, see event-photos/adriatic-2025-stage-partners.jpg).",
+    "excluded": [
+      "Balkans Crypto"
+    ],
+    "list": [
+      {
+        "name": "Bitget",
+        "slug": "bitget",
+        "logo_source": "https://adriaticawards.com/dist/img/bitget.png",
+        "logo_local": "assets/partners/bitget.webp",
+        "url": "https://www.bitget.com/"
+      },
+      {
+        "name": "WePlay",
+        "slug": "weplay",
+        "logo_source": "https://adriaticawards.com/dist/img/WePlay.png",
+        "logo_local": "assets/partners/weplay.webp",
+        "url": "https://weplay.media/"
+      },
+      {
+        "name": "PD Partners",
+        "slug": "pd-partners",
+        "logo_source": "https://adriaticawards.com/dist/img/pdp_logo_dark.svg",
+        "logo_local": "assets/partners/pd-partners.svg",
+        "url": "https://pd.partners/"
+      },
+      {
+        "name": "1win Partners",
+        "slug": "1win-partners",
+        "logo_source": "https://adriaticawards.com/dist/img/1win.png",
+        "logo_local": "assets/partners/1win-partners.webp",
+        "url": "https://1win-partners.com/"
+      },
+      {
+        "name": "it.com Domains",
+        "slug": "it-com-domains",
+        "logo_source": "https://adriaticawards.com/dist/img/itcom.png",
+        "logo_local": "assets/partners/it-com-domains.webp",
+        "url": "https://it.com/"
+      },
+      {
+        "name": "Lead Volume",
+        "slug": "lead-volume",
+        "logo_source": "https://adriaticawards.com/dist/img/Lead_Volume.png",
+        "logo_local": "assets/partners/lead-volume.webp",
+        "note": "Organizer - keep in a special tier if design calls for it",
+        "url": "https://leadvolume.io/"
+      },
+      {
+        "name": "Chipsa",
+        "slug": "chipsa",
+        "logo_local": "assets/partners/chipsa.svg",
+        "url": "https://igaming.chipsa.design/",
+        "note": "Design Partner (bartering terms — see decisions.md)"
+      },
+      {
+        "name": "Angor",
+        "slug": "angor",
+        "logo_source": "https://adriaticawards.com/dist/img/Angor.png",
+        "logo_local": "assets/partners/angor.webp",
+        "url": "https://angor.io/"
+      },
+      {
+        "name": "INFI MultiChain",
+        "slug": "infi-multichain",
+        "logo_source": "https://adriaticawards.com/dist/img/multi1.png",
+        "logo_local": "assets/partners/infi-multichain.webp",
+        "url": "https://infimultichain.com/"
+      },
+      {
+        "name": "Rock Paper Scissors",
+        "slug": "rock-paper-scissors",
+        "logo_source": "https://adriaticawards.com/dist/img/rock.png",
+        "logo_local": "assets/partners/rock-paper-scissors.webp",
+        "url": "https://rps.gg/"
+      },
+      {
+        "name": "Brofist",
+        "slug": "brofist",
+        "logo_source": "https://adriaticawards.com/dist/img/Bro.png",
+        "logo_local": "assets/partners/brofist.webp",
+        "url": "https://brofist.io/"
+      },
+      {
+        "name": "Streamerzone",
+        "slug": "streamerzone",
+        "logo_source": "https://adriaticawards.com/dist/img/Streamerzone.png",
+        "logo_local": "assets/partners/streamerzone.webp",
+        "url": "https://streamerzone.gg/"
+      },
+      {
+        "name": "Pruvendo",
+        "slug": "pruvendo",
+        "logo_source": "https://adriaticawards.com/dist/img/Pruvendo.png",
+        "logo_local": "assets/partners/pruvendo.webp",
+        "url": "https://pruvendo.com/"
+      },
+      {
+        "name": "X6 Agency",
+        "slug": "x6-agency",
+        "logo_source": "https://adriaticawards.com/dist/img/X6AGENCY.png",
+        "logo_local": "assets/partners/x6-agency.webp",
+        "url": "https://x6agency.com/"
+      },
+      {
+        "name": "X6 Partners",
+        "slug": "x6-partners",
+        "logo_source": "https://adriaticawards.com/dist/img/x6%20partners.png",
+        "logo_local": "assets/partners/x6-partners.webp",
+        "url": "https://x6agency.com/"
+      },
+      {
+        "name": "Lenkep",
+        "slug": "lenkep",
+        "logo_source": "https://adriaticawards.com/dist/img/lenkep.png",
+        "logo_local": "assets/partners/lenkep.webp",
+        "url": "https://lenkep.com/"
+      },
+      {
+        "name": "CryptoCat",
+        "slug": "cryptocat",
+        "logo_source": "https://adriaticawards.com/dist/img/cryptocat.png",
+        "logo_local": "assets/partners/cryptocat.webp",
+        "url": "https://cryptocat.io/"
+      },
+      {
+        "name": "Grow bank",
+        "slug": "grow-bank",
+        "logo_source": "https://adriaticawards.com/dist/img/Growbank.png",
+        "logo_local": "assets/partners/grow-bank.webp"
+      },
+      {
+        "name": "Titan",
+        "slug": "titan",
+        "logo_source": "https://adriaticawards.com/dist/img/Titan.png",
+        "logo_local": "assets/partners/titan.webp"
+      },
+      {
+        "name": "Cycle",
+        "slug": "cycle",
+        "logo_source": "https://adriaticawards.com/dist/img/cycle.png",
+        "logo_local": "assets/partners/cycle.webp"
+      },
+      {
+        "name": "Pace-rabbit",
+        "slug": "pace-rabbit",
+        "logo_source": "https://adriaticawards.com/dist/img/pace-rabbit.png",
+        "logo_local": "assets/partners/pace-rabbit.webp",
+        "url": "https://pacerabbit.com/"
+      },
+      {
+        "name": "Icoda",
+        "slug": "icoda",
+        "logo_source": "https://adriaticawards.com/dist/img/icoda.png",
+        "logo_local": "assets/partners/icoda.webp",
+        "url": "https://icoda.io/"
+      },
+      {
+        "name": "MMPro Group",
+        "slug": "mmpro-group",
+        "logo_source": "https://adriaticawards.com/dist/img/MMPro.png",
+        "logo_local": "assets/partners/mmpro-group.webp"
+      },
+      {
+        "name": "Gambling Talk",
+        "slug": "gambling-talk",
+        "logo_source": "https://adriaticawards.com/dist/img/Gambling.png",
+        "logo_local": "assets/partners/gambling-talk.webp",
+        "url": "https://gamblingtalk.net/"
+      },
+      {
+        "name": "Casino Online",
+        "slug": "casino-online",
+        "logo_source": "https://adriaticawards.com/dist/img/casino.webp",
+        "logo_local": "assets/partners/casino-online.webp",
+        "url": "https://casino.online/"
+      },
+      {
+        "name": "Gordon",
+        "slug": "gordon",
+        "logo_source": "https://adriaticawards.com/dist/img/Gordon.png",
+        "logo_local": "assets/partners/gordon.webp",
+        "url": "https://gordondm.com/"
+      },
+      {
+        "name": "Kripto Dnevnik",
+        "slug": "kripto-dnevnik",
+        "logo_source": "https://adriaticawards.com/dist/img/KriptoDnevnik.png",
+        "logo_local": "assets/partners/kripto-dnevnik.webp",
+        "url": "https://kriptodnevnik.com/"
+      }
+    ],
+    "logo_download_todo": "Run `python3 scripts/download-external-assets.py` to download partner & media partner logos.",
+    "to_be_partner_form": {
+      "cta": "To be a Partner",
+      "fields": [
+        "name",
+        "email",
+        "linkedin"
+      ]
+    }
+  },
+  "media_partners": {
+    "directive_note": "Same directive: keep everyone except Balkans Crypto.",
+    "list": [
+      {
+        "name": "Coin Gabbar",
+        "slug": "coin-gabbar",
+        "logo_source": "https://adriaticawards.com/dist/img/coingabbar.svg",
+        "logo_local": "assets/media-partners/coin-gabbar.svg",
+        "url": "https://www.coingabbar.com/"
+      },
+      {
+        "name": "Bitcoinist",
+        "slug": "bitcoinist",
+        "logo_source": "https://adriaticawards.com/dist/img/Bitcoinist_Logo.png",
+        "logo_local": "assets/media-partners/bitcoinist.webp",
+        "url": "https://bitcoinist.com/"
+      },
+      {
+        "name": "NewsBTC",
+        "slug": "newsbtc",
+        "logo_source": "https://adriaticawards.com/dist/img/Newsbtc_logo.png",
+        "logo_local": "assets/media-partners/newsbtc.webp",
+        "url": "https://www.newsbtc.com/"
+      },
+      {
+        "name": "Metattalks",
+        "slug": "metattalks",
+        "logo_source": "https://adriaticawards.com/dist/img/Metattalks_Logo.png",
+        "logo_local": "assets/media-partners/metattalks.webp",
+        "url": "https://www.metatalks.ai/"
+      },
+      {
+        "name": "AllConfs bot",
+        "slug": "allconfs-bot",
+        "logo_source": "https://adriaticawards.com/dist/media_partners/AllConfsbot_media.png",
+        "logo_local": "assets/media-partners/allconfs-bot.webp",
+        "url": "https://allconfsbot.website/"
+      },
+      {
+        "name": "iGaming News",
+        "slug": "igaming-news",
+        "logo_source": "https://adriaticawards.com/dist/img/igamingnews.png",
+        "logo_local": "assets/media-partners/igaming-news.webp",
+        "url": "https://igaming.news/"
+      },
+      {
+        "name": "Transcend Labs",
+        "slug": "transcend-labs",
+        "logo_source": "https://adriaticawards.com/dist/img/Transcend.png",
+        "logo_local": "assets/media-partners/transcend-labs.webp",
+        "url": "https://transcendlabs.com/"
+      },
+      {
+        "name": "The News Crypto",
+        "slug": "the-news-crypto",
+        "logo_source": "https://adriaticawards.com/dist/media_partners/TNC.png",
+        "logo_local": "assets/media-partners/the-news-crypto.webp",
+        "url": "https://thenewscrypto.com/"
+      },
+      {
+        "name": "AMBCrypto",
+        "slug": "amb-crypto",
+        "logo_source": "https://adriaticawards.com/dist/media_partners/AMB-Logo.svg",
+        "logo_local": "assets/media-partners/amb-crypto.svg",
+        "url": "https://ambcrypto.com/"
+      },
+      {
+        "name": "Museigen.io",
+        "slug": "museigen",
+        "logo_source": "https://adriaticawards.com/dist/img/wht.png",
+        "logo_local": "assets/media-partners/museigen.webp",
+        "url": "https://museigen.io/"
+      },
+      {
+        "name": "Crypto 12",
+        "slug": "crypto-12",
+        "logo_source": "https://adriaticawards.com/dist/img/crypto.png",
+        "logo_local": "assets/media-partners/crypto-12.webp",
+        "url": "https://crypto12.com/"
+      },
+      {
+        "name": "CPA Club",
+        "slug": "cpa-club",
+        "logo_source": "https://adriaticawards.com/dist/img/cpa.png",
+        "logo_local": "assets/media-partners/cpa-club.webp",
+        "url": "https://cpa.club/"
+      },
+      {
+        "name": "Vizi",
+        "slug": "vizi",
+        "logo_source": "https://adriaticawards.com/dist/img/vizi.png",
+        "logo_local": "assets/media-partners/vizi.webp",
+        "url": "https://www.vizii.io/"
+      }
+    ],
+    "note_removed": "'Gambling Talk' appears in both sponsor and media partner lists on adriaticawards.com. Listed only once, under sponsors, to avoid duplicate display."
+  },
+  "organizer": {
+    "name": "Lead Volume",
+    "role": "Event organizer and agency behind BWiGA",
+    "logo_path": "assets/logo/lead-volume.ai",
+    "placement_hint": "About section (the paragraph that already mentions 'Our agency, Lead Volume'), footer, partners grid if appropriate."
+  },
+  "design_partner": {
+    "name": "Chipsa",
+    "url": "https://chipsa.design",
+    "logo_path": "TODO: add Chipsa logo file to assets/logo/",
+    "placements": [
+      "footer",
+      "partners grid (Design Partner tier)",
+      "newsletters and socials per bartering terms"
+    ]
+  },
+  "contacts": {
+    "email": "mail@lead-volume.com",
+    "telegram_handle": "bwiga2026",
+    "socials": {
+      "linkedin": "https://www.linkedin.com/company/bwiga/",
+      "instagram": "https://www.instagram.com/bwiga2026",
+      "telegram": "https://t.me/bwiga2026",
+      "x_twitter": "https://x.com/bwiga2026"
+    }
+  },
+  "tech": {
+    "languages": [
+      "en"
+    ],
+    "analytics": "TODO: choose GA4 / Yandex.Metrica / both",
+    "payment_integration": "external link only (crypto processing handled by organizer side)",
+    "hosting_notes": "Current domain to be transferred - Alexey will provide access",
+    "cms_approach": "Static build driven by this content.json; non-devs edit JSON directly or via a simple admin panel",
+    "archive_subdomain": "e.g. 2025.{main_domain} - preserve previous site as-is, add key facts from 2025 + Belgrade 2026"
+  }
+}

@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =============================================================================
+   BWiGA Adriatic — design tokens
+   Source: design file (project/colors_and_type.css). Hex values are exact.
+   Only the tokens we use across components live here; component-local rules
+   stay in their own files.
+   ============================================================================= */
+:root {
+  /* Brand */
+  --bwiga-blue: #3083C6;
+  --bwiga-blue-bright: #4FA1DC;
+  --bwiga-blue-deep: #1F6BAA;
+  --bwiga-blue-glow: rgba(48, 131, 198, 0.45);
+  --bwiga-blue-tint: rgba(48, 131, 198, 0.12);
+
+  /* Champagne / awards-only accent */
+  --bwiga-gold: #D9B26A;
+  --bwiga-gold-bright: #E8C988;
+  --bwiga-gold-deep: #BF9352;
+
+  /* Neutrals — premium dark base */
+  --ink-0: #05070D;
+  --ink-1: #0A0E1A;
+  --ink-2: #11172A;
+  --ink-3: #1C233B;
+  --ink-4: #2A3251;
+  --paper-0: #FFFFFF;
+  --paper-1: #E6E9F5;
+  --paper-2: rgba(255, 255, 255, 0.64);
+  --paper-3: rgba(255, 255, 255, 0.42);
+  --paper-4: rgba(255, 255, 255, 0.24);
+  --hairline: rgba(255, 255, 255, 0.18);
+  --hairline-strong: rgba(255, 255, 255, 0.28);
+
+  /* Type scale (clamp-based, fluid) */
+  --fs-h1: clamp(40px, 5.5vw, 72px);
+  --fs-h3: clamp(24px, 2.5vw, 36px);
+  --fs-h4: 22px;
+  --fs-h5: 18px;
+  --fs-caption: 15px;
+  --fs-eyebrow: 13px;
+  --fs-micro: 12px;
+
+  /* Layout — narrower min/vw so that on 1280-1440 laptop screens the
+     sidebar doesn't eat ~20% of horizontal real estate. At 4K it still
+     hits the 360px cap. */
+  --rail: clamp(196px, 16vw, 360px);
+  --ease-soft: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (max-width: 1023px) {
+  :root { --rail: 0px; }
+}
+
+* , *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--ink-0);
+  color: var(--paper-0);
+  font-family: var(--font-inter), system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img { display: block; max-width: 100%; }
+
+.stage {
+  margin-left: var(--rail);
+  min-height: 100svh;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
