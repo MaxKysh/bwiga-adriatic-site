@@ -25,7 +25,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
-import { OrbitControls, useTexture, Environment } from '@react-three/drei'
+import { useTexture, Environment } from '@react-three/drei'
 import * as THREE from 'three'
 
 // =============================================================================
@@ -38,8 +38,11 @@ const FORM_MAIN = {
   vbh: 790,
 }
 
-// Силуэт основания с прорезью под язычок (через fill-rule="evenodd")
-const FORM_BOTTOM = {
+// Силуэт основания с прорезью под язычок (через fill-rule="evenodd").
+// Source: /Users/maxkysh/Desktop/Subtract.svg
+// Прямоугольник 854×275 со скруглением 40px по углам и прямоугольной
+// прорезью 283×48 в центре (X 284..567, Y 114..162) под tongue пластины.
+const BASE_SVG = {
   d: 'M814 0C836.091 0 854 17.9086 854 40V235C854 257.091 836.091 275 814 275H40C17.9086 275 0 257.091 0 235V40C0 17.9086 17.9086 0 40 0H814ZM284 114V162H567V114H284Z',
   vbw: 854,
   vbh: 275,
@@ -172,10 +175,57 @@ function buildHole(subpath, vbw, vbh) {
 function StatuetteScene({
   thicknessMm = 8,
   gapMm = 4,
-  autoRotate = true,
   acrylic = true,
 }) {
   const groupRef = useRef()
+  // Target rotation written by window.mousemove, read by useFrame.
+  // Kept in a ref to avoid re-renders on every cursor move.
+  const targetRot = useRef({ x: 0, y: 0 })
+
+  // ---- Environment-driven feature flags (mobile + reduced-motion) ----------
+  // matchMedia lookups are client-only; StatuetteScene runs inside <Canvas>
+  // which itself is mounted only on the client, so useEffect is safe here.
+  const [isMobile, setIsMobile] = useState(false)
+  const [reducedMotion, setReducedMotion] = useState(false)
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const mqM = window.matchMedia('(max-width: 768px)')
+    const mqR = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const upd = () => {
+      setIsMobile(mqM.matches)
+      setReducedMotion(mqR.matches)
+    }
+    upd()
+    mqM.addEventListener('change', upd)
+    mqR.addEventListener('change', upd)
+    return () => {
+      mqM.removeEventListener('change', upd)
+      mqR.removeEventListener('change', upd)
+    }
+  }, [])
+
+  // ---- Mouse-driven tilt -------------------------------------------------
+  // Track cursor across the whole window (not just the canvas) so the
+  // statuette reacts no matter where the user moves the pointer on the page.
+  // Normalize to (-1..+1) on both axes, then scale to clamped rotation
+  // targets: Y axis ±0.5 rad (≈±28°), X axis ±0.35 rad (≈±20°).
+  // Sign conventions:
+  //   - Mouse right → positive Y rotation (statuette's right edge swings back)
+  //   - Mouse up    → negative X rotation (top edge leans away from viewer)
+  // Reduced-motion users get a fully static statuette facing forward.
+  useEffect(() => {
+    if (typeof window === 'undefined' || reducedMotion) return
+    const onMove = (e) => {
+      const nx = (e.clientX / window.innerWidth) * 2 - 1   // -1 left → +1 right
+      const ny = -((e.clientY / window.innerHeight) * 2 - 1) // -1 bottom → +1 top
+      const cx = Math.max(-1, Math.min(1, nx))
+      const cy = Math.max(-1, Math.min(1, ny))
+      targetRot.current.y = cx * 0.5    // ±0.5 rad
+      targetRot.current.x = -cy * 0.35  // ±0.35 rad
+    }
+    window.addEventListener('mousemove', onMove, { passive: true })
+    return () => window.removeEventListener('mousemove', onMove)
+  }, [reducedMotion])
 
   // Загружаем текстуру лица (синяя плёнка с графикой)
   const frontTexture = useTexture('/statuette/texture-front.png')
@@ -184,19 +234,12 @@ function StatuetteScene({
   frontTexture.flipY = true
   frontTexture.colorSpace = THREE.SRGBColorSpace
 
-  // Парсим SVG один раз
-  const { plateShape, baseShape, plateBounds } = useMemo(() => {
+  // Парсим SVG пластины
+  const { plateShape, plateBounds } = useMemo(() => {
     const mainSubs = parseSvgPath(FORM_MAIN.d)
     const plateShape = buildShape(mainSubs[0], FORM_MAIN.vbw, FORM_MAIN.vbh)
 
-    const bottomSubs = parseSvgPath(FORM_BOTTOM.d)
-    const baseShape = buildShape(bottomSubs[0], FORM_BOTTOM.vbw, FORM_BOTTOM.vbh)
-    if (bottomSubs[1]) {
-      baseShape.holes.push(buildHole(bottomSubs[1], FORM_BOTTOM.vbw, FORM_BOTTOM.vbh))
-    }
-
-    // Запоминаем размеры для UV-мапа и позиционирования
-    // Тело пластины ограничено снизу строкой y=753.162 в SVG
+    // Тело пластины ограничено снизу строкой y=753.162 в SVG.
     // После центровки + flip: world Y = -(753.162 - 395) * 0.026 = -9.31cm
     const plateBodyBottomY = -(753.162 - FORM_MAIN.vbh / 2) * PX_TO_CM
     const plateWidth = FORM_MAIN.vbw * PX_TO_CM
@@ -204,9 +247,21 @@ function StatuetteScene({
 
     return {
       plateShape,
-      baseShape,
       plateBounds: { plateBodyBottomY, plateWidth, plateHeight },
     }
+  }, [])
+
+  // Новая база из BASE_SVG — fresh build. Отдельный useMemo, отдельный
+  // pipeline. Outer subpath даёт силуэт скруглённого прямоугольника,
+  // второй subpath (через fill-rule="evenodd") становится hole'ом —
+  // прорезью под tongue пластины.
+  const baseShape = useMemo(() => {
+    const subs = parseSvgPath(BASE_SVG.d)
+    const shape = buildShape(subs[0], BASE_SVG.vbw, BASE_SVG.vbh)
+    if (subs[1]) {
+      shape.holes.push(buildHole(subs[1], BASE_SVG.vbw, BASE_SVG.vbh))
+    }
+    return shape
   }, [])
 
   // Геометрия пластины с UV для текстуры
@@ -218,7 +273,10 @@ function StatuetteScene({
       bevelThickness: 0.06,
       bevelSize: 0.06,
       bevelSegments: 2,
-      curveSegments: 32,
+      // curveSegments: 32 → 16. Делит количество tri на скруглённых краях
+      // плиты пополам — заметно дешевле и vertex stage, и transmission pass,
+      // визуально на bbox 575×790 силуэта разница в кривизне ~незаметна.
+      curveSegments: 16,
     }
     const geom = new THREE.ExtrudeGeometry(plateShape, ext)
     geom.translate(0, 0, -depth / 2) // центрируем по Z
@@ -239,9 +297,11 @@ function StatuetteScene({
     return geom
   }, [plateShape, thicknessMm])
 
-  // Геометрия основания (extrude + поворот плашмя)
+  // Геометрия основания (extrude + поворот плашмя). slabHeightCm понижен
+  // 1.2 → 0.8 (×1.5 тоньше). Значение должно совпадать с slabHeight в
+  // basePositionY ниже — иначе верх базы съедет относительно низа плиты.
   const baseGeometry = useMemo(() => {
-    const slabHeightCm = 1.2
+    const slabHeightCm = 0.8
     const ext = {
       depth: slabHeightCm,
       bevelEnabled: true,
@@ -255,41 +315,47 @@ function StatuetteScene({
     return geom
   }, [baseShape])
 
-  // Позиция основания: его верх на расстоянии gap от низа тела пластины
+  // Позиция основания: его верх на расстоянии gap от низа тела пластины.
+  // slabHeight 0.8 синхронизирован с baseGeometry выше.
   const basePositionY = useMemo(() => {
     const gapCm = gapMm / 10
-    const slabHeight = 1.2
+    const slabHeight = 0.8
     return plateBounds.plateBodyBottomY - gapCm - slabHeight / 2
   }, [gapMm, plateBounds])
 
-  useFrame((_, delta) => {
-    if (autoRotate && groupRef.current) {
-      groupRef.current.rotation.y += delta * 0.3
-    }
+  // Smoothly interpolate current rotation toward the mouse-driven target.
+  // Lerp factor 0.06 → ~250 ms to reach 95% of the target at 60 fps, which
+  // feels fluid without lag. Reduced-motion: no-op (stays facing forward).
+  useFrame(() => {
+    const g = groupRef.current
+    if (!g || reducedMotion) return
+    g.rotation.y += (targetRot.current.y - g.rotation.y) * 0.06
+    g.rotation.x += (targetRot.current.x - g.rotation.x) * 0.06
   })
 
   return (
     <group ref={groupRef}>
       {/* Пластина с multi-material:
           - индекс 0: front face — текстура с прозрачностью
-          - индекс 1: back face — белая
-          - индекс 2: side faces — прозрачный акрил */}
-      <mesh geometry={plateGeometry} castShadow receiveShadow>
+          - индекс 1: back face — белая */}
+      <mesh geometry={plateGeometry}>
         {acrylic ? (
           <>
-            {/* front - текстура поверх прозрачного */}
             <meshPhysicalMaterial
               attach="material-0"
               map={frontTexture}
+              // color #b8b8b8 — тинт чуть ниже белого (72% яркости). При
+              // наличии map финальный diffuse = color × map.rgb, так что
+              // синяя печать теперь читается приглушённее на ~30%.
+              color="#b8b8b8"
               transparent
-              transmission={0.85}
+              transmission={0.5}
               thickness={1.2}
               roughness={0.05}
               ior={1.49}
-              clearcoat={0.4}
-              clearcoatRoughness={0.06}
+              clearcoat={0.17}
+              clearcoatRoughness={0.15}
             />
-            {/* back - белая основа */}
             <meshPhysicalMaterial
               attach="material-1"
               color="#ffffff"
@@ -305,36 +371,48 @@ function StatuetteScene({
         )}
       </mesh>
 
-      {/* Основание - акриловое или серое */}
+      {/* Новая база — multi-material, копирующий схему плиты:
+          - material-0 (капы, т.е. верх и низ плашки): прозрачное стекло
+            с opacity 0.2 и лёгким clearcoat. Через них видно сквозь.
+          - material-1 (стенки, т.е. тонкие торцы по периметру плашки
+            + внутренние стенки прорези): опаковая белая, точно как у
+            плиты. Эти 1.2см торцы и дают тот самый видимый «контур»,
+            который читается у плиты сверху. */}
       <mesh
         geometry={baseGeometry}
         position={[0, basePositionY, 0]}
         rotation={[-Math.PI / 2, 0, 0]}
-        castShadow
-        receiveShadow
       >
         {acrylic ? (
-          <meshPhysicalMaterial
-            color="#ffffff"
-            transmission={0.95}
-            thickness={1.5}
-            roughness={0.04}
-            ior={1.49}
-            transparent
-          />
+          <>
+            <meshPhysicalMaterial
+              attach="material-0"
+              color="#ffffff"
+              transparent
+              opacity={0.2}
+              roughness={0.08}
+              metalness={0}
+              // clearcoat 0.4 → 0.27 (ещё в 1.5× слабее).
+              clearcoat={0.27}
+              clearcoatRoughness={0.15}
+              ior={1.5}
+            />
+            <meshPhysicalMaterial
+              attach="material-1"
+              color="#939393"
+              // roughness 0.5 → 0.75 — стенки сильнее матовые, env reflections
+              // почти размыты (×1.5 шероховатее).
+              roughness={0.75}
+              metalness={0}
+            />
+          </>
         ) : (
           <meshStandardMaterial color="#cccccc" roughness={0.3} />
         )}
       </mesh>
 
-      {/* Тень под основанием */}
-      <mesh
-        rotation={[-Math.PI / 2, 0, 0]}
-        position={[0, basePositionY - 0.85, 0]}
-      >
-        <planeGeometry args={[28, 12]} />
-        <meshBasicMaterial color="#000000" transparent opacity={0.18} />
-      </mesh>
+      {/* Shadow plane removed — статуэтка плавает на фоне страницы без
+          фейкового контактного пятна. */}
     </group>
   )
 }
@@ -343,9 +421,8 @@ function StatuetteScene({
 // Внешний компонент с Canvas - то, что импортируется в страницы
 // =============================================================================
 export function Statuette({
-  autoRotate = true,
   thicknessMm = 8,
-  gapMm = 4,
+  gapMm = 2,
   acrylic = true,
   className = '',
 }) {
@@ -370,49 +447,39 @@ export function Statuette({
       <Canvas
         camera={{ position: [0, 4, 80], fov: 28 }}
         gl={{ antialias: true, alpha: true }}
-        // Cap pixel ratio at 1.5 — at 2× on a 4K display the backing buffer
-        // explodes to 33M+ pixels per frame and transmission/IBL becomes
-        // the bottleneck. 1.5× keeps acrylic edges crisp without the cost.
-        dpr={[1, 1.5]}
-        shadows
-        // frameloop="never" parks the render loop; "always" runs it. We
-        // toggle on viewport intersection.
+        // Cap DPR at 1 (was 1.5). На 4K мониторе 1.5× давало ~8M*1.5 = 12M
+        // пикселей в backing buffer на каждый transmission pass — основная
+        // причина просадки. На 1× acrylic edges чуть мыльнее, но transmission
+        // и так сам по себе размывает фон, разница почти не видна.
+        dpr={1}
+        // shadows УДАЛЕНЫ. На прозрачном акриле cast/receive shadows почти
+        // невидимы (плита refract'ит фон, а не отбрасывает чёткую тень),
+        // но shadow-map render pass идёт каждый кадр. Хороший free perf win.
         frameloop={active ? 'always' : 'never'}
       >
-        {/* Освещение */}
+        {/* Освещение — без shadow casting */}
         <ambientLight intensity={0.5} />
-        <directionalLight
-          position={[8, 12, 14]}
-          intensity={1.2}
-          castShadow
-          // Halved shadow map (1024→512). Statuette is acrylic so the cast
-          // shadow is soft anyway — full-res map isn't visible to the user.
-          shadow-mapSize-width={512}
-          shadow-mapSize-height={512}
-        />
+        <directionalLight position={[8, 12, 14]} intensity={1.2} />
         <directionalLight position={[-10, 4, 8]} intensity={0.4} />
         {/* Rim light - синий, сзади. Это даёт «грани играют синим» */}
         <directionalLight position={[0, 6, -14]} intensity={1.8} color="#3083C6" />
 
-        {/* HDR-окружение для отражений на акриле.
-            Если не нужно/тяжело — закомментируй: */}
-        {acrylic && <Environment preset="studio" />}
+        {/* HDR-окружение для отражений. resolution={128} (по умолчанию 256)
+            — PMREM cubemap генерируется в 4× меньше, mip-сэмплинг per pixel
+            на стенках/clearcoat'е тоже дешевле. На roughness 0.35 у базы
+            и 0.06 у clearcoat'а плиты разница в чёткости отражений ~незаметна. */}
+        {acrylic && <Environment preset="studio" resolution={128} />}
 
         <StatuetteScene
           thicknessMm={thicknessMm}
           gapMm={gapMm}
-          autoRotate={autoRotate}
           acrylic={acrylic}
         />
 
-        <OrbitControls
-          enablePan={false}
-          enableZoom={true}
-          minDistance={30}
-          maxDistance={120}
-          maxPolarAngle={Math.PI / 2 + 0.3}
-          minPolarAngle={Math.PI / 2 - 0.5}
-        />
+        {/* OrbitControls удалены: ротация теперь полностью управляется
+            window mousemove → лерп в useFrame. Драг-to-rotate конфликтовал
+            бы с этим. Зум тоже отключён — статуэтка показывается на
+            фиксированной дистанции. */}
       </Canvas>
     </div>
   )

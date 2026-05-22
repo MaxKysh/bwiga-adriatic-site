@@ -78,7 +78,7 @@ export default function Hero() {
           </div>
 
           <div className="hero-stage">
-            <Statuette autoRotate />
+            <Statuette />
           </div>
 
           <div className="past">
