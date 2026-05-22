@@ -182,26 +182,17 @@ function StatuetteScene({
   // Kept in a ref to avoid re-renders on every cursor move.
   const targetRot = useRef({ x: 0, y: 0 })
 
-  // ---- Environment-driven feature flags (mobile + reduced-motion) ----------
-  // matchMedia lookups are client-only; StatuetteScene runs inside <Canvas>
-  // which itself is mounted only on the client, so useEffect is safe here.
-  const [isMobile, setIsMobile] = useState(false)
+  // ---- Reduced-motion preference ----------------------------------------
+  // matchMedia is client-only; StatuetteScene runs inside <Canvas> which
+  // itself mounts only on the client, so useEffect is safe.
   const [reducedMotion, setReducedMotion] = useState(false)
   useEffect(() => {
     if (typeof window === 'undefined') return
-    const mqM = window.matchMedia('(max-width: 768px)')
-    const mqR = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const upd = () => {
-      setIsMobile(mqM.matches)
-      setReducedMotion(mqR.matches)
-    }
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const upd = () => setReducedMotion(mq.matches)
     upd()
-    mqM.addEventListener('change', upd)
-    mqR.addEventListener('change', upd)
-    return () => {
-      mqM.removeEventListener('change', upd)
-      mqR.removeEventListener('change', upd)
-    }
+    mq.addEventListener('change', upd)
+    return () => mq.removeEventListener('change', upd)
   }, [])
 
   // ---- Mouse-driven tilt -------------------------------------------------
