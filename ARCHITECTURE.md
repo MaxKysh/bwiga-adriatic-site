@@ -7,7 +7,7 @@
 | Вопрос | Решение | Источник |
 |---|---|---|
 | Формат сотрудничества | Бартер, Chipsa = Design Partner | 17 апр |
-| Официальное название | Balkans Web3 & iGaming Awards (BWiGA) | 23 апр, Алексей |
+| Официальное название | Balkan Web3 & iGaming Awards (BWiGA) | 23 апр, Алексей |
 | Дата и место | 30 сентября 2026, Avala Resort & Villas, Будва | 17 апр |
 | Адрес площадки | 2 Mediteranska, Budva 85310, Montenegro | 24 апр, Google Places |
 | Сайт площадки | avalaresort.com | 24 апр |

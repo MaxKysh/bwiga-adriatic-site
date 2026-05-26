@@ -3,7 +3,7 @@
   "$note": "Source of truth для контента сайта. Менять здесь - менять на сайте. TODO отмечены явно, см. TODO.md для полного списка.",
   "$updated": "2026-04-24",
   "event": {
-    "name": "Balkans Web3 & iGaming Awards",
+    "name": "Balkan Web3 & iGaming Awards",
     "short_name": "BWiGA",
     "edition": "Adriatic Edition",
     "date_iso": "2026-09-30",
@@ -78,7 +78,7 @@
       "icon_ai": "assets/logo/bwiga-icon.ai",
       "icon_extraction_todo": "Extract clean icon-only SVG from bwiga-icon.ai for favicon / navigation / loaders / animation."
     },
-    "wordmark": "BWIGA (black) + 'Balkans Web3 & iGaming Awards' (in brand blue)",
+    "wordmark": "BWIGA (black) + 'Balkan Web3 & iGaming Awards' (in brand blue)",
     "identity_note": "The 2025 identity (sailboat-in-oval with laurels, 'ADRIATIC WEB3 & IGAMING AWARDS') is being retired for the new edition. Keep it only on the /2025 archive subdomain. New 2026 identity is the B-with-diamond mark.",
     "vibe_keywords": [
       "premium gala",
@@ -96,7 +96,7 @@
   },
   "hero": {
     "name_block": "BWiGA",
-    "subtitle": "Balkans Web3 & iGaming Awards",
+    "subtitle": "Balkan Web3 & iGaming Awards",
     "date_line": "September 30th, Wednesday",
     "location_line_1": "Budva, Montenegro",
     "location_line_2": "Avala Hotel",
@@ -160,7 +160,7 @@
       "total_count": 29
     },
     "body": [
-      "Our conference has been held for two years in the Balkans, in Serbia and Montenegro.",
+      "Our conference has been held for two years in the Balkan region, in Serbia and Montenegro.",
       "Previously, our agency, Lead Volume, organized blockchain and digital marketing events in Turkey, Kazakhstan, and Russia.",
       "Our team has held over 20 conferences in five countries over the past 10 years.",
       "BWiGA brings together participants from more than 30 countries, including guests from Cyprus, England, India, Turkey, Hungary, Georgia, Ukraine, Germany, Bulgaria, Russia, Norway, Croatia, the Czech Republic, Latvia, and many others.",

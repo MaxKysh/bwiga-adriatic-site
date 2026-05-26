@@ -138,7 +138,7 @@ export default function Hero() {
           </div>
 
           <h1 className="hero-title">
-            Balkans Web3<br />
+            Balkan Web3<br />
             <span className="accent">&amp;</span> iGaming Awards
           </h1>
 

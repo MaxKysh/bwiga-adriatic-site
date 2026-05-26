@@ -23,7 +23,7 @@ const inter = Inter({
 // LinkedIn, Twitter / X) get matching previews.
 // -----------------------------------------------------------------------------
 const SITE_TITLE =
-  "BWiGA Adriatic Edition — Balkans Web3 & iGaming Awards · September 30, 2026";
+  "BWiGA Adriatic Edition — Balkan Web3 & iGaming Awards · September 30, 2026";
 // Pulled from content.json (hero.tagline_primary) so the description stays
 // in sync with the page's headline subtitle — single source of truth.
 const SITE_DESCRIPTION = content.hero.tagline_primary;
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
         width: 1200,
         height: 630,
         type: "image/jpeg",
-        alt: "BWiGA Adriatic Edition — Balkans Web3 & iGaming Awards",
+        alt: "BWiGA Adriatic Edition — Balkan Web3 & iGaming Awards",
       },
     ],
   },
@@ -69,7 +69,7 @@ const eventJsonLd = {
   "@context": "https://schema.org",
   "@type": "Event",
   name: "BWiGA Adriatic Edition",
-  description: "Balkans Web3 & iGaming Awards · Adriatic Edition",
+  description: "Balkan Web3 & iGaming Awards · Adriatic Edition",
   startDate: "2026-09-30T14:00:00+02:00",
   endDate: "2026-09-30T23:00:00+02:00",
   eventStatus: "https://schema.org/EventScheduled",

@@ -20,7 +20,7 @@ const STATS = [
   {
     num: "30",
     label: "Countries",
-    meta: <>Balkans · CIS · MENA · APAC</>,
+    meta: <>Balkan · CIS · MENA · APAC</>,
   },
   {
     num: "30",

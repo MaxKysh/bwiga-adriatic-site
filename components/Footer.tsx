@@ -37,7 +37,7 @@ export default function Footer() {
         <div className="footer-grid">
           {/* Brand */}
           <div className="footer-col footer-brand">
-            <a className="brand-mark" href="#hero" aria-label="BWiGA — Balkans Web3 & iGaming Awards home">
+            <a className="brand-mark" href="#hero" aria-label="BWiGA — Balkan Web3 & iGaming Awards home">
               <span className="brand-logo" role="img" aria-label="BWiGA" />
             </a>
             <p className="brand-tagline">{BRAND_TAGLINE}</p>
