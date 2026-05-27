@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import content from "@/data/content.json";
+import Preloader from "@/components/Preloader";
+import ScrollReveal from "@/components/ScrollReveal";
 import "./globals.css";
 
 const inter = Inter({
@@ -12,15 +14,19 @@ const inter = Inter({
 // -----------------------------------------------------------------------------
 // SEO / social metadata.
 //
-// `metadataBase` is a placeholder — swap it for the real canonical URL once
-// the site goes live on Vercel. Until then, OG / Twitter image URLs resolve
-// against this base when crawlers fetch the page from a deploy preview, so
-// keep it pointed at *some* https origin (relative paths in `images` get
-// prefixed with this).
+// `metadataBase` — canonical production domain. Used by Next.js to resolve
+// relative URLs in metadata into absolute ones (required by crawlers like
+// Telegram / Facebook / Twitter that fetch metadata server-side and can't
+// guess the origin).
 //
 // `title`, `description`, og.image, etc. are mirrored across regular meta,
 // Open Graph and Twitter tags so all three audiences (Google, Facebook /
 // LinkedIn, Twitter / X) get matching previews.
+//
+// OG_IMAGE_PATH carries a `?v=N` cache-bust suffix — bump it whenever the
+// og-image.jpg content changes so Telegram / Facebook / Twitter re-fetch
+// instead of serving a stale cached preview. Aggressive crawler caches
+// can hold an image for weeks otherwise.
 // -----------------------------------------------------------------------------
 const SITE_TITLE =
   "BWiGA Adriatic Edition — Balkan Web3 & iGaming Awards · September 30, 2026";
@@ -28,8 +34,8 @@ const SITE_TITLE =
 // in sync with the page's headline subtitle — single source of truth.
 const SITE_DESCRIPTION = content.hero.tagline_primary;
 const SITE_NAME = "BWiGA Adriatic Edition";
-// TODO: replace with the real canonical origin after the Vercel deploy.
-const SITE_URL = "https://bwiga-adriatic.vercel.app";
+const SITE_URL = "https://www.adriaticawards.com";
+const OG_IMAGE_PATH = "/og-image.jpg?v=2";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -43,7 +49,7 @@ export const metadata: Metadata = {
     description: SITE_DESCRIPTION,
     images: [
       {
-        url: "/og-image.jpg",
+        url: OG_IMAGE_PATH,
         width: 1200,
         height: 630,
         type: "image/jpeg",
@@ -55,7 +61,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
-    images: ["/og-image.jpg"],
+    images: [OG_IMAGE_PATH],
   },
 };
 
@@ -89,7 +95,7 @@ const eventJsonLd = {
     name: "Lead Volume",
     url: "https://lead-volume.com",
   },
-  image: `${SITE_URL}/og-image.jpg`,
+  image: `${SITE_URL}${OG_IMAGE_PATH}`,
 };
 
 export default function RootLayout({
@@ -98,6 +104,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} antialiased`}>
+        {/* Preloader первым ребёнком body — рендерится в SSR с inline-
+            стилями, виден immediate'но при доставке HTML. Гаснет когда
+            window.load + 500ms прошло. */}
+        <Preloader />
+        {/* Scroll-reveal — навешивает fade-up на секции ниже фолда после
+            монтажа. На Hero/StatsPanel не влияет (они в начальном viewport
+            и пропускаются). */}
+        <ScrollReveal />
         {children}
         <script
           type="application/ld+json"

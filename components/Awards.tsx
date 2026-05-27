@@ -557,15 +557,21 @@ export default function Awards() {
           .awards-intro .meta {
             grid-column: 1;
           }
-          .noms-grid {
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            grid-template-rows: repeat(10, auto);
-          }
-        }
-        @media (max-width: 760px) {
+          /* На tablet/«большом mobile» (≤1100) — две колонки. Раньше было
+             три: длинные названия вроде «Mediabuying Agency of the year»
+             в 3-кол сетке резались на 2 строки и выглядели плотно. */
           .noms-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
             grid-template-rows: repeat(15, auto);
+          }
+        }
+        @media (max-width: 760px) {
+          /* Истинно мобильные ширины: одна колонка, читается как
+             вертикальный список. */
+          .noms-grid {
+            grid-template-columns: 1fr;
+            grid-template-rows: auto;
+            grid-auto-flow: row;
           }
           .awards-timeline-track {
             grid-template-columns: 1fr;

@@ -20,7 +20,7 @@ const STATS = [
   {
     num: "30",
     label: "Countries",
-    meta: <>Balkan · CIS · MENA · APAC</>,
+    meta: <>Balkans · EU · CIS</>,
   },
   {
     num: "30",
@@ -31,7 +31,7 @@ const STATS = [
     num: "100",
     sup: "+",
     label: "Companies",
-    meta: <>Web2 &amp; Web3 · iGaming · esports</>,
+    meta: <>Web3 · iGaming · AI</>,
   },
 ];
 

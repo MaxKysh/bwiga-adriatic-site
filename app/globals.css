@@ -84,3 +84,32 @@ img { display: block; max-width: 100%; }
     scroll-behavior: auto !important;
   }
 }
+
+/* =============================================================================
+ * Scroll-triggered reveal — baseline fade-up.
+ *
+ * Класс .reveal-section вешается JS'ом (ScrollReveal.tsx) только на те
+ * секции, которые при загрузке страницы НЕ в начальном viewport'е. Hero и
+ * StatsPanel (видимые сразу) не получают .reveal-section и рендерятся как
+ * есть — иначе они бы мигали opacity 0 → 1 в первом кадре после монтажа.
+ *
+ * Когда секция входит во viewport, IntersectionObserver вешает .is-in,
+ * запускается transition: opacity 0→1 + translateY 24px→0 за 700ms через
+ * --ease-soft. Это baseline — можно расширить per-секцией позже
+ * (stagger'и для детей, blur'ы, scale и т.д.).
+ *
+ * prefers-reduced-motion обнуляет transitions глобально (см. блок выше),
+ * так что эффект отключается автоматически.
+ * =============================================================================
+ */
+.reveal-section {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 700ms var(--ease-soft),
+              transform 700ms var(--ease-soft);
+  will-change: opacity, transform;
+}
+.reveal-section.is-in {
+  opacity: 1;
+  transform: translateY(0);
+}

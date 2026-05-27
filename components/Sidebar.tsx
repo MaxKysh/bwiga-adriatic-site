@@ -22,22 +22,47 @@ export default function Sidebar() {
   const [open, setOpen] = useState<boolean>(false);
 
   useEffect(() => {
+    // Scroll-spy через rAF + direct bounds check, а не IntersectionObserver.
+    // Старый подход с rootMargin "-40% 0px -55% 0px" создавал тонкую полосу
+    // в ~5% viewport — при коротких секциях / быстром скролле она могла не
+    // получить событие isIntersecting, и active state «застревал» на
+    // предыдущей секции (типичный сюрприз для секции #day).
+    //
+    // Новый подход: на каждом scroll-tick'е находим секцию, верхняя граница
+    // которой выше триггер-линии (35% от верха viewport'а), а нижняя — ниже.
+    // Такая секция гарантированно ровно одна, никаких race condition'ов и
+    // пропусков.
     const ids = ["hero", ...NAV.map((n) => n.id)];
-    const els = ids
-      .map((id) => document.getElementById(id))
-      .filter((el): el is HTMLElement => el !== null);
-    if (els.length === 0) return;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) setActive(e.target.id);
-        });
-      },
-      { rootMargin: "-40% 0px -55% 0px", threshold: 0 }
-    );
-    els.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
+    let rafId = 0;
+    const update = () => {
+      rafId = 0;
+      const triggerY = window.innerHeight * 0.35;
+      let currentId = ids[0];
+      for (const id of ids) {
+        const el = document.getElementById(id);
+        if (!el) continue;
+        const rect = el.getBoundingClientRect();
+        if (rect.top <= triggerY && rect.bottom > triggerY) {
+          currentId = id;
+          break;
+        }
+      }
+      setActive(currentId);
+    };
+    const onScroll = () => {
+      if (rafId) return; // throttle to one update per frame
+      rafId = window.requestAnimationFrame(update);
+    };
+
+    update(); // initial state
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
   }, []);
 
   // Lock background scroll while the mobile drawer is open.

@@ -16,7 +16,7 @@ const PARTNERS_TITLE_PREFIX = "Brands that ";
 const PARTNERS_TITLE_ACCENT = "back";
 const PARTNERS_TITLE_SUFFIX = " the night.";
 const PARTNERS_META =
-  "The companies and outlets standing behind BWiGA — sponsors of the awards, partners on the program, and the publications carrying the story across Web3 and iGaming.";
+  "The companies and outlets standing behind BWiGA — sponsors, nominees, partners on the program, and the publications carrying the story across Web3, AI and iGaming.";
 
 const GROUP_MAIN_EYE = "Partners";
 const GROUP_MEDIA_EYE = "Media Partners";
