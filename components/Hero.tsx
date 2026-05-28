@@ -715,7 +715,9 @@ export default function Hero() {
           .hero-grid {
             grid-template-columns: 1fr;
             grid-template-rows: auto auto;
-            padding: 84px 24px 32px;
+            /* Бургер уехал в правый нижний угол — верхний отступ под него
+               больше не нужен, поднимаем контент hero выше (84px → 32px). */
+            padding: 32px 24px 32px;
             min-height: auto;
           }
           .hero-rightcol {

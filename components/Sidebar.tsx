@@ -78,13 +78,22 @@ export default function Sidebar() {
     <>
       <button
         type="button"
-        className="rail-toggle"
+        className={`rail-toggle ${open ? "is-open" : ""}`}
         aria-label={open ? "Close menu" : "Open menu"}
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
       >
-        <span aria-hidden />
+        <span className="rail-toggle-bar bar1" aria-hidden />
+        <span className="rail-toggle-bar bar2" aria-hidden />
       </button>
+
+      {/* Mobile backdrop — затемнение за компактным меню (bottom-right).
+          Клик по нему закрывает меню. На десктопе display:none. */}
+      <div
+        className={`rail-backdrop ${open ? "is-open" : ""}`}
+        onClick={() => setOpen(false)}
+        aria-hidden
+      />
 
       <aside
         className={`rail ${open ? "rail--open" : ""}`}
@@ -337,71 +346,266 @@ export default function Sidebar() {
           filter: none;
         }
 
+        /* Toggle (FAB) и backdrop — только мобильные, на десктопе скрыты. */
         .rail-toggle {
           display: none;
-          position: fixed;
-          top: 14px;
-          left: 14px;
-          width: 44px;
-          height: 44px;
-          background: #000;
-          border: 1px solid var(--hairline-strong);
-          backdrop-filter: blur(8px);
-          z-index: 60;
-          place-items: center;
-          cursor: pointer;
-          padding: 0;
         }
-        .rail-toggle span,
-        .rail-toggle span::before,
-        .rail-toggle span::after {
-          content: "";
-          display: block;
-          width: 18px;
-          height: 1.5px;
-          background: var(--paper-0);
-          position: relative;
-        }
-        .rail-toggle span::before {
-          position: absolute;
-          top: -6px;
-        }
-        .rail-toggle span::after {
-          position: absolute;
-          top: 6px;
+        .rail-backdrop {
+          display: none;
         }
 
         @media (max-width: 1023px) {
+          /* ---- Toggle FAB: bottom-right, плоская, инверсия задника ----
+             backdrop-filter: invert(1) инвертирует то, что отрендерено ЗА
+             кнопкой (hero-видео), в пределах её скруглённого box'а. На ярком
+             фоне читается как тёмная. Собственные дети (палочки) фильтром НЕ
+             затрагиваются — остаются чисто белыми. В отличие от
+             mix-blend-mode, backdrop-filter не страдает от изоляции
+             stacking-контекста у fixed-элемента. Без градиента, без тени. */
           .rail-toggle {
             display: grid;
+            place-items: center;
+            position: fixed;
+            right: 18px;
+            bottom: 18px;
+            width: 52px;
+            height: 52px;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            box-shadow: none;
+            border-radius: 14px;
+            cursor: pointer;
+            z-index: 70;
+            /* Полная инверсия фона. opacity(0.5) пробовали — давала плоский
+               серый (полупрозрачность гасит инверсию), поэтому invert(1). */
+            -webkit-backdrop-filter: invert(1);
+            backdrop-filter: invert(1);
+            transition: transform 200ms var(--ease-soft),
+              background 360ms var(--ease-soft);
           }
+          .rail-toggle:active {
+            transform: scale(0.94);
+          }
+          /* Открыто: за кнопкой сплошной тёмный backdrop меню. Гасим фильтр
+             и даём чуть-светлее-фона полупрозрачную заливку, чтобы кнопка
+             слегка выделялась на тёмном (не сливалась). */
+          .rail-toggle.is-open {
+            -webkit-backdrop-filter: none;
+            backdrop-filter: none;
+            background: rgba(255, 255, 255, 0.12);
+          }
+          /* Палочки толще (3px). mix-blend-mode: difference — блендятся
+             против инвертированного тела кнопки, поэтому ВСЕГДА контрастят:
+             на тёмном теле (яркий hero) выглядят белыми, на светлом теле
+             (тёмный hero, где invert делает тело белым) становятся тёмными.
+             Решает проблему «белые палочки на белом теле». */
+          .rail-toggle-bar {
+            position: absolute;
+            z-index: 1;
+            width: 24px;
+            height: 3px;
+            border-radius: 3px;
+            background: #fff;
+            mix-blend-mode: difference;
+            transition: transform 400ms var(--ease-spring);
+          }
+          /* В открытом меню тело — предсказуемо тёмное (rgba white 0.12 на
+             тёмном backdrop'е), обычные белые палочки читаются без блендинга. */
+          .rail-toggle.is-open .rail-toggle-bar {
+            mix-blend-mode: normal;
+          }
+          .rail-toggle-bar.bar1 {
+            transform: translateY(-5px);
+          }
+          .rail-toggle-bar.bar2 {
+            transform: translateY(5px);
+          }
+          .rail-toggle.is-open .rail-toggle-bar.bar1 {
+            transform: rotate(45deg);
+          }
+          .rail-toggle.is-open .rail-toggle-bar.bar2 {
+            transform: rotate(-45deg);
+          }
+
+          /* ---- Backdrop: ПОЛНОЕ затемнение (без прозрачности), fade-in ---- */
+          .rail-backdrop {
+            display: block;
+            position: fixed;
+            inset: 0;
+            background: #05070d;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 360ms var(--ease-soft);
+            z-index: 55;
+          }
+          .rail-backdrop.is-open {
+            opacity: 1;
+            pointer-events: auto;
+          }
+
+          /* ---- Меню-панель: на весь экран, прозрачная. Контент разнесён
+             по углам (logo top-left, nav bottom-right, credits bottom-left).
+             Сама панель pointer-events:none — пустые зоны кликаются «сквозь»
+             на backdrop (закрытие). Кликабельны только дети. ---- */
           .rail {
-            width: 100%;
-            transform: translateX(-100%);
-            transition: transform 360ms var(--ease-soft);
-            align-items: flex-start;
-            padding: 80px 32px 32px;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: auto;
+            height: auto;
+            max-height: none;
+            background: transparent;
+            border: 0;
+            border-right: 0;
+            padding: 0;
+            align-items: stretch;
+            opacity: 0;
+            transform: translateY(12px);
+            pointer-events: none;
+            transition: opacity 320ms var(--ease-soft),
+              transform 320ms var(--ease-soft);
+            z-index: 60;
           }
           .rail--open {
-            transform: translateX(0);
+            opacity: 1;
+            transform: translateY(0);
           }
+          .rail--open .rail-logo,
+          .rail--open .rail-nav,
+          .rail--open .rail-foot {
+            pointer-events: auto;
+          }
+          /* Разделительная линия между блоками (меню+кредиты, низ ~90px) и
+             кнопкой внизу (верх ~70px). На 76px. Заметнее, чем раньше
+             (0.1 → 0.22). Гаснет вместе с панелью (часть .rail). */
+          .rail::after {
+            content: "";
+            position: absolute;
+            left: 24px;
+            right: 24px;
+            bottom: 76px;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.22);
+          }
+
+          /* Логотип BWiGA — сверху слева. */
+          .rail-logo {
+            display: block;
+            position: absolute;
+            top: 26px;
+            left: 24px;
+            width: auto;
+            padding: 0;
+            background: none;
+          }
+          .rail-logo :global(img) {
+            width: 198px;
+          }
+
+          /* Nav: правый нижний угол (опущено ниже), мельче, со stagger'ом. */
           .rail-nav {
-            margin-top: 32px;
-            align-items: flex-start;
-            gap: 28px;
+            position: absolute;
+            right: 24px;
+            bottom: 100px;
+            margin-top: 0;
+            flex: 0 0 auto;
+            align-items: flex-end;
+            gap: 2px;
           }
           .rail-link {
-            font-size: 22px;
-            padding-left: 0;
+            font-size: 17px;
+            padding: 9px 0;
+            text-align: right;
+            /* Чисто белые пункты. Активный остаётся синим — у
+               .rail-link.is-active специфичность выше (0,2,0 vs 0,1,0). */
+            color: #fff;
+            opacity: 0;
+            transform: translateX(14px);
+            transition: opacity 300ms var(--ease-soft),
+              transform 300ms var(--ease-soft),
+              color 220ms var(--ease-soft);
           }
           .rail-link::before {
             display: none;
           }
-          .rail-foot {
-            display: none;
+          .rail--open .rail-link {
+            opacity: 1;
+            transform: translateX(0);
           }
-          .rail-logo :global(img) {
-            width: 180px;
+          /* Stagger сверху вниз. Delay только при .rail--open — на закрытии
+             селекторы не матчатся, всё гаснет разом (быстрый close). */
+          .rail--open .rail-nav .rail-link:nth-child(1) {
+            transition-delay: 80ms;
+          }
+          .rail--open .rail-nav .rail-link:nth-child(2) {
+            transition-delay: 125ms;
+          }
+          .rail--open .rail-nav .rail-link:nth-child(3) {
+            transition-delay: 170ms;
+          }
+          .rail--open .rail-nav .rail-link:nth-child(4) {
+            transition-delay: 215ms;
+          }
+          .rail--open .rail-nav .rail-link:nth-child(5) {
+            transition-delay: 260ms;
+          }
+          .rail--open .rail-nav .rail-link:nth-child(6) {
+            transition-delay: 305ms;
+          }
+          .rail--open .rail-nav .rail-link:nth-child(7) {
+            transition-delay: 350ms;
+          }
+
+          /* Кредиты (Lead Volume + Chipsa) — левый нижний угол. bottom: 90px
+             (ниже, чем nav-anchor 100): у пунктов меню есть padding-bottom
+             9px, который опускает текст «Contacts» относительно его бокса.
+             Сдвиг кредитов вниз компенсирует это — низ CHIPSA встаёт на
+             уровень текста «Contacts». gap 24px — больше воздуха между
+             Lead Volume и Chipsa. */
+          .rail-foot {
+            position: absolute;
+            left: 24px;
+            bottom: 110px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 24px;
+            margin-top: 0;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 300ms var(--ease-soft) 410ms,
+              transform 300ms var(--ease-soft) 410ms;
+          }
+          .rail--open .rail-foot {
+            opacity: 1;
+            transform: translateY(0);
+          }
+          .rail-credit {
+            align-items: flex-start;
+            gap: 7px;
+          }
+          .rail-credit-label {
+            font-size: 9.5px;
+            letter-spacing: 0.16em;
+          }
+          .rail-credit-logo-wrap {
+            max-width: 104px;
+          }
+          /* Chipsa — в две строки: "Made in" сверху, [знак] Chipsa снизу. */
+          .rail-credit-chipsa {
+            flex-wrap: wrap;
+            gap: 6px 8px;
+            font-size: 11px;
+            letter-spacing: 0.12em;
+          }
+          .rail-credit-chipsa .rail-credit-label {
+            flex-basis: 100%;
+          }
+          .rail-credit-chipsa-sign {
+            width: 26px;
+            height: 15px;
           }
         }
       `}</style>
