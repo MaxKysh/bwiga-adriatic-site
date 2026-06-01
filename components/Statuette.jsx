@@ -172,15 +172,26 @@ function buildHole(subpath, vbw, vbh) {
 // =============================================================================
 // Основной компонент сцены
 // =============================================================================
+// Lite-режим: на mobile (≤1024 / coarse pointer) StatuetteSafe монтирует
+// сцену с lite=true. Это переключает:
+//   - источник вращения: scroll-driven по .hero-stage (вместо mouse-tilt).
+//   - env-map: procedural CanvasTexture, PMREM-фильтруется вручную (вместо
+//     drei studio preset).
+// Начальный угол по Y: −0.66 rad (наклон влево, ~38°), по скроллу linear
+// лерпит к +0.66 rad. Подняли с 0.33 для более выразительного эффекта;
+// скорость удваивается автоматически (та же scroll-дистанция, больший угол).
+const LITE_ROT_RANGE = 0.66
+
 function StatuetteScene({
   thicknessMm = 8,
   gapMm = 4,
   acrylic = true,
+  lite = false,
 }) {
   const groupRef = useRef()
-  // Target rotation written by window.mousemove, read by useFrame.
-  // Kept in a ref to avoid re-renders on every cursor move.
-  const targetRot = useRef({ x: 0, y: 0 })
+  // Target rotation written by input source (mouse OR scroll), read by useFrame.
+  // Kept in a ref to avoid re-renders on every update.
+  const targetRot = useRef({ x: 0, y: lite ? -LITE_ROT_RANGE : 0 })
 
   // ---- Reduced-motion preference ----------------------------------------
   // matchMedia is client-only; StatuetteScene runs inside <Canvas> which
@@ -195,28 +206,64 @@ function StatuetteScene({
     return () => mq.removeEventListener('change', upd)
   }, [])
 
-  // ---- Mouse-driven tilt -------------------------------------------------
-  // Track cursor across the whole window (not just the canvas) so the
-  // statuette reacts no matter where the user moves the pointer on the page.
-  // Normalize to (-1..+1) on both axes, then scale to clamped rotation
-  // targets: Y axis ±0.5 rad (≈±28°), X axis ±0.35 rad (≈±20°).
-  // Sign conventions:
-  //   - Mouse right → positive Y rotation (statuette's right edge swings back)
-  //   - Mouse up    → negative X rotation (top edge leans away from viewer)
-  // Reduced-motion users get a fully static statuette facing forward.
+  // ---- Input source: mouse (desktop) or scroll (mobile/lite) ------------
   useEffect(() => {
     if (typeof window === 'undefined' || reducedMotion) return
+
+    if (lite) {
+      // Scroll-driven rotation. Initial angle = -0.33 (наклон влево).
+      // По мере прокрутки .hero-stage (контейнер самой статуэтки) → +0.33.
+      // Мерим прогресс по СТАТУЭТКЕ, не по всему hero: hero ~100svh высокий,
+      // статуэтка занимает только часть, и прокрутив пол-hero мы уже её не
+      // видим — а progress всего 0.5. По высоте stage'а полный поворот
+      // успевает произойти пока статуэтка ещё на экране.
+      const onScroll = () => {
+        const stage = document.querySelector('.hero-stage')
+        if (!stage) return
+        const rect = stage.getBoundingClientRect()
+        // scrolledOff: на сколько верх stage'а ушёл выше viewport top.
+        // 0 (stage сверху) → rect.height (stage полностью прокручен мимо).
+        const scrolledOff = Math.max(0, -rect.top)
+        // /10 от высоты stage'а — полный поворот укладывается в первые
+        // ~10% прокрутки stage'а. Дальше угол просто остаётся на +0.33.
+        const range = rect.height > 0 ? rect.height / 10 : 1
+        const progress = Math.max(0, Math.min(1, scrolledOff / range))
+        targetRot.current.y = -LITE_ROT_RANGE + 2 * LITE_ROT_RANGE * progress
+        targetRot.current.x = 0
+      }
+      // Стартовый вызов чтобы инициировать target до первого scroll'а.
+      onScroll()
+      window.addEventListener('scroll', onScroll, { passive: true })
+      window.addEventListener('resize', onScroll)
+      return () => {
+        window.removeEventListener('scroll', onScroll)
+        window.removeEventListener('resize', onScroll)
+      }
+    }
+
+    // Desktop: mouse-driven tilt — без изменений.
+    // Normalize cursor (-1..+1) → clamped rotation targets: Y ±0.5, X ±0.35.
+    // Mouse right → +Y rotation. Mouse up → -X rotation (верхняя грань назад).
     const onMove = (e) => {
-      const nx = (e.clientX / window.innerWidth) * 2 - 1   // -1 left → +1 right
-      const ny = -((e.clientY / window.innerHeight) * 2 - 1) // -1 bottom → +1 top
+      const nx = (e.clientX / window.innerWidth) * 2 - 1
+      const ny = -((e.clientY / window.innerHeight) * 2 - 1)
       const cx = Math.max(-1, Math.min(1, nx))
       const cy = Math.max(-1, Math.min(1, ny))
-      targetRot.current.y = cx * 0.5    // ±0.5 rad
-      targetRot.current.x = -cy * 0.35  // ±0.35 rad
+      targetRot.current.y = cx * 0.5
+      targetRot.current.x = -cy * 0.35
     }
     window.addEventListener('mousemove', onMove, { passive: true })
     return () => window.removeEventListener('mousemove', onMove)
-  }, [reducedMotion])
+  }, [reducedMotion, lite])
+
+  // Стартовый поворот: на lite сразу выставляем rotation.y = -0.33,
+  // чтобы первый кадр уже отрисовался под нужным углом без анимации
+  // от 0 к -0.33 (лерп в useFrame дотянул бы за ~300ms, но визуально
+  // лучше без этого «swing in»).
+  useEffect(() => {
+    if (!lite || !groupRef.current) return
+    groupRef.current.rotation.y = -LITE_ROT_RANGE
+  }, [lite])
 
   // Загружаем текстуру лица (синяя плёнка с графикой)
   const frontTexture = useTexture('/statuette/texture-front.png')
@@ -344,8 +391,13 @@ function StatuetteScene({
               thickness={1.2}
               roughness={0.05}
               ior={1.49}
-              clearcoat={0.17}
-              clearcoatRoughness={0.15}
+              // В lite-режиме env-map отсутствует, поэтому specular приходит
+              // только от direct lights → clearcoat должен быть высокий и
+              // острый (низкий clearcoatRoughness), чтобы отражения от
+              // фронтального light'а были видимы и явно мигрировали по
+              // вращению. envMapIntensity тут не работает (env-map'а нет).
+              clearcoat={lite ? 0.65 : 0.17}
+              clearcoatRoughness={lite ? 0.06 : 0.15}
             />
             <meshPhysicalMaterial
               attach="material-1"
@@ -383,9 +435,11 @@ function StatuetteScene({
               opacity={0.2}
               roughness={0.08}
               metalness={0}
-              // clearcoat 0.4 → 0.27 (ещё в 1.5× слабее).
-              clearcoat={0.27}
-              clearcoatRoughness={0.15}
+              // В lite-режиме env-map'а нет, specular приходит от direct
+              // lights. Высокий clearcoat + острый clearcoatRoughness =
+              // явные hot spots на верхней плоскости плашки.
+              clearcoat={lite ? 0.75 : 0.27}
+              clearcoatRoughness={lite ? 0.06 : 0.15}
               ior={1.5}
             />
             <meshPhysicalMaterial
@@ -416,6 +470,7 @@ export function Statuette({
   gapMm = 2,
   acrylic = true,
   className = '',
+  lite = false,
 }) {
   // Pause the WebGL render loop entirely while the Hero is off-screen.
   // Saves ~5-10% CPU when scrolling through the lower sections, plus
@@ -432,6 +487,9 @@ export function Statuette({
     io.observe(el)
     return () => io.disconnect()
   }, [])
+
+  // Lite env-map применяется через <LiteEnvProvider /> внутри Canvas
+  // (см. ниже). Здесь не делаем useMemo — текстура живёт внутри Provider'а.
 
   return (
     <div ref={wrapRef} className={className} style={{ width: '100%', height: '100%' }}>
@@ -454,17 +512,39 @@ export function Statuette({
         <directionalLight position={[-10, 4, 8]} intensity={0.4} />
         {/* Rim light - синий, сзади. Это даёт «грани играют синим» */}
         <directionalLight position={[0, 6, -14]} intensity={1.8} color="#3083C6" />
+        {/* Lite-mode: три фронтальных лайта на РАЗНЫХ высотах, чтобы
+            specular hot spots мигрировали по всей статуэтке при вращении,
+            а не только по верху. Каждый лайт даёт свой hot spot на своей
+            вертикальной зоне; при rotation вокруг Y они все одновременно
+            идут слева направо → ощущение «бегущей по всей форме» подсветки. */}
+        {lite && (
+          <>
+            {/* Mid-height key — центральный блик по плите */}
+            <directionalLight position={[0, 0, 30]} intensity={2.6} />
+            {/* Lower-front fill — освещает низ плиты и верх базы */}
+            <directionalLight position={[2, -6, 22]} intensity={2.2} />
+            {/* Upper-side accent — блик в верхней рамке "B" */}
+            <directionalLight position={[-8, 8, 16]} intensity={1.6} />
+          </>
+        )}
 
-        {/* HDR-окружение для отражений. resolution={128} (по умолчанию 256)
-            — PMREM cubemap генерируется в 4× меньше, mip-сэмплинг per pixel
-            на стенках/clearcoat'е тоже дешевле. На roughness 0.35 у базы
-            и 0.06 у clearcoat'а плиты разница в чёткости отражений ~незаметна. */}
-        {acrylic && <Environment preset="studio" resolution={128} />}
+        {/* Env-map. Desktop: drei studio preset (HDR с CDN, ~2-5 MB в памяти,
+            самые красивые отражения). Mobile (lite): процедурный
+            CanvasTexture 256×128 — генерится на клиенте, без сетевой
+            загрузки, в памяти ~200-400 KB после PMREM. Визуально близко, но
+            не идентично. */}
+        {acrylic && !lite && (
+          <Environment preset="studio" resolution={128} />
+        )}
+        {/* env-map в lite-режиме НЕ ставим — LDR canvas через PMREM не
+            давал видимых отражений на clearcoat. Вместо этого работают
+            extra direct lights (см. выше). */}
 
         <StatuetteScene
           thicknessMm={thicknessMm}
           gapMm={gapMm}
           acrylic={acrylic}
+          lite={lite}
         />
 
         {/* OrbitControls удалены: ротация теперь полностью управляется

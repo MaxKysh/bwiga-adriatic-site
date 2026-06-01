@@ -1,5 +1,7 @@
 "use client";
 
+import Counter from "./Counter";
+
 // "By the numbers" panel — sits between Hero and Story. Brand-blue surface,
 // the bookend rhyme to the Footer (page opens and closes on the same
 // brand-blue note). The big numerals replace the inline stat-row that used
@@ -13,7 +15,14 @@ const STATS = [
     label: "Nominations",
     meta: (
       <>
-        <b>26</b> categories · <b>4</b> special
+        <b>
+          <Counter value="28" />
+        </b>{" "}
+        categories ·{" "}
+        <b>
+          <Counter value="4" />
+        </b>{" "}
+        special
       </>
     ),
   },
@@ -47,7 +56,7 @@ export default function StatsPanel() {
           {STATS.map((s, i) => (
             <div key={i} className="c">
               <div className="num">
-                {s.num}
+                <Counter value={s.num} delay={i * 220} />
                 {s.sup ? <sup>{s.sup}</sup> : null}
               </div>
               <div className="lbl">{s.label}</div>

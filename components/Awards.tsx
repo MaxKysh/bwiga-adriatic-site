@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import content from "@/data/content.json";
 import { mailto } from "@/lib/mailto";
 import { NOMINATION_BODY, NOMINATION_SUBJECT } from "@/lib/mail-templates";
+import Counter from "./Counter";
 
 // -----------------------------------------------------------------------------
 // Local editorial constants — section chrome and short timeline labels that
@@ -110,9 +111,11 @@ export default function Awards() {
           <div className="meta">
             <div className="label">{META_LABEL}</div>
             <div className="stats">
-              {META_STATS.map((s) => (
+              {META_STATS.map((s, i) => (
                 <div key={s.label} className="stat">
-                  <b>{s.value}</b>
+                  <b>
+                    <Counter value={s.value} delay={i * 220} />
+                  </b>
                   <span>{s.label}</span>
                 </div>
               ))}

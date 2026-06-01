@@ -116,3 +116,119 @@ img { display: block; max-width: 100%; }
   opacity: 1;
   transform: translateY(0);
 }
+
+/* =============================================================================
+ * Heading word-reveal — каждое слово заголовка обёрнуто span'ом .rh-word
+ * (ScrollReveal.tsx делает это после монтажа, через TreeWalker по text
+ * nodes — сохраняя вложенные элементы вроде <em> или <br>).
+ *
+ * Слово закрыто маской того же цвета (через currentColor) — псевдо-element
+ * ::after с inset: 0 покрывает только bounds слова (display: inline-block).
+ * При триггере маска схлопывается вправо. transition-delay на каждом слове
+ * прогрессивный (выставляется через --reveal-delay инлайном), создавая
+ * stagger в порядке чтения. На адаптивах работает естественно: слова
+ * перекомпоновываются, но порядок и тайминг анимации остаётся.
+ *
+ * Триггеры:
+ *   - .reveal-section.is-in .rh-word — для h2'шек в секциях, которые
+ *     вошли во viewport (IntersectionObserver в ScrollReveal).
+ *   - body.intro-done .hero .rh-word — для h1 в hero, активируется когда
+ *     Preloader исчез после первичной загрузки.
+ * =============================================================================
+ */
+.rh-word {
+  display: inline-block;
+  position: relative;
+  isolation: isolate;
+}
+.rh-word::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: currentColor;
+  transform-origin: right center;
+  transform: scaleX(1);
+  transition: transform 600ms cubic-bezier(0.77, 0, 0.175, 1)
+    var(--reveal-delay, 0ms);
+  pointer-events: none;
+  z-index: 1;
+}
+.reveal-section.is-in .rh-word::after,
+body.intro-done .hero .rh-word::after {
+  transform: scaleX(0);
+}
+
+/* =============================================================================
+ * Counter — digit-column slot-roll.
+ *
+ * .counter — inline-block контейнер. Каждая цифра — .counter-digit окошком
+ * height: 1em с overflow: hidden. Внутри полоска .counter-strip с 10
+ * вертикально уложенными span'ами 0-9 (line-height: 1, height: 1em каждый).
+ * Полоска translateY = -target * 1em показывает нужную цифру.
+ * --delay (inline style) на полоске даёт stagger между соседними цифрами.
+ * Не-цифровые символы (+, −, точка) идут через .counter-static, статично.
+ *
+ * Initial state: все полоски на translateY: 0 (показывают «0»). При попадании
+ * во viewport на корне .counter появляется .is-in → CSS-transition
+ * прокручивает каждую полоску до её --target с lerp 1.2s + per-digit delay.
+ *
+ * font-variant-numeric: tabular-nums — чтобы все цифры были одинаковой
+ * ширины (моноширинные numerals), иначе при прокрутке окошко «прыгает».
+ * =============================================================================
+ */
+.counter {
+  display: inline-block;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  vertical-align: baseline;
+  /* Короткий fade-in: счётчик стартует невидимым, плавно проявляется
+     одновременно с началом прокрута цифр. */
+  opacity: 0;
+  transition: opacity 350ms ease-out;
+}
+.counter.is-in {
+  opacity: 1;
+}
+.counter-digit {
+  display: inline-block;
+  height: 1em;
+  overflow: hidden;
+  vertical-align: top;
+  position: relative;
+}
+.counter-strip {
+  display: flex;
+  flex-direction: column;
+  /* Initial position: показывает цифру, которая стоит за ROLL_OFFSET
+     позиций до target (например для target=0 это «3», для target=9 — «2»).
+     Это даёт всем цифрам включая нули видимый прокат на ~7 позиций. */
+  transform: translateY(calc(var(--start, 0) * -1em));
+  transition: transform var(--counter-duration, 1200ms)
+    cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0ms);
+}
+.counter-strip > span {
+  display: block;
+  height: 1em;
+  line-height: 1;
+  text-align: center;
+}
+.counter.is-in .counter-strip {
+  transform: translateY(calc(var(--end, 0) * -1em));
+}
+.counter-static {
+  display: inline-block;
+  vertical-align: top;
+  line-height: 1;
+}
+.counter-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

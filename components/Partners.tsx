@@ -339,19 +339,46 @@ export default function Partners() {
           box-sizing: border-box;
           background: linear-gradient(180deg, #1c2030 0%, #131722 100%);
           border-radius: 6px;
+          /* overflow: hidden — чтобы ::after с белой заливкой клипался под
+             скруглённые углы тайла. */
+          overflow: hidden;
           box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset,
             0 4px 10px rgba(0, 0, 0, 0.45);
           text-decoration: none;
-          transition: background 250ms var(--ease-soft),
-            box-shadow 250ms var(--ease-soft), transform 250ms var(--ease-soft);
+          /* Hover-OUT transitions для shadow + transform: 3.5s, плавно. */
+          transition: box-shadow 3500ms var(--ease-spring),
+            transform 3500ms var(--ease-spring);
+        }
+        /* Белая заливка hover'а — отдельный overlay-слой, animation-safe.
+           Браузеры не интерполируют background gradient ↔ solid color
+           (переключение происходит рывком). Через opacity ::after fade
+           работает плавно. На hover-OUT затухает за 3.5s, на hover-IN
+           прилетает за 250ms. */
+        .partners-tile::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background: #ffffff;
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 3500ms var(--ease-spring);
         }
         .partners-tile:hover {
-          /* Pure white on hover — gives every logo (black, white, or full
-             colour) a neutral surface so the original artwork reads cleanly. */
-          background: #ffffff;
           transform: translateY(-2px);
           box-shadow: 0 1px 0 rgba(255, 255, 255, 0.6) inset,
             0 12px 28px rgba(0, 0, 0, 0.55);
+          /* Hover-IN: быстро и snappy. */
+          transition: box-shadow 250ms var(--ease-soft),
+            transform 250ms var(--ease-soft);
+        }
+        .partners-tile:hover::after {
+          opacity: 1;
+          transition: opacity 250ms var(--ease-soft);
+        }
+        /* Logo поверх ::after слоя. */
+        .partners-tile :global(img.logo) {
+          position: relative;
+          z-index: 1;
         }
         .partners-tile:focus-visible {
           outline: 2px solid var(--bwiga-blue);
@@ -367,8 +394,9 @@ export default function Partners() {
              (it killed flat-colour logos that ship with a built-in dark fill).
              Slight contrast bump compensates for the desaturation. */
           filter: grayscale(1) contrast(1.05);
-          transition: filter 300ms var(--ease-soft),
-            transform 300ms var(--ease-soft);
+          /* Hover-OUT (возврат grayscale + scale 1): длинная (3.5s) плавная. */
+          transition: filter 3500ms var(--ease-spring),
+            transform 3500ms var(--ease-spring);
         }
         /* Dark-on-transparent artwork — silhouette to light at rest so the
            wordmark/icon reads on the dark tile. Removed on hover (white tile
@@ -379,6 +407,9 @@ export default function Partners() {
         .partners-tile:hover :global(img.logo) {
           filter: none;
           transform: scale(1.04);
+          /* Hover-IN: быстрая 300ms (как было). */
+          transition: filter 300ms var(--ease-soft),
+            transform 300ms var(--ease-soft);
         }
 
         /* -------- CTA -------- */

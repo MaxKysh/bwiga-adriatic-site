@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import content from "@/data/content.json";
+import Counter from "./Counter";
 
 // -----------------------------------------------------------------------------
 // Local editorial constants — section chrome + curated numbers that aren't part
@@ -321,7 +322,7 @@ export default function Story() {
           {STORY_STATS.map((s, i) => (
             <li key={`${s.value}-${s.label}-${i}`}>
               <b>
-                {s.value}
+                <Counter value={s.value} delay={i * 220} />
                 {s.suffix ? <span className="plus">{s.suffix}</span> : null}
               </b>
               <span>{s.label}</span>

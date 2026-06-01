@@ -29,6 +29,19 @@ export default function Preloader() {
   const [hidden, setHidden] = useState(false);
   const startRef = useRef(0);
 
+  // После fade-out'а preloader'а (~450ms по CSS transition) выставляем
+  // body.intro-done. ScrollReveal вешает .rh-word на hero h1 при mount'е,
+  // их маски ждут именно этот класс (см. globals.css). Так heading-wipe
+  // на hero стартует ПОСЛЕ того как первичный загрузочный экран ушёл,
+  // а не одновременно с ним.
+  useEffect(() => {
+    if (!hidden) return;
+    const t = window.setTimeout(() => {
+      document.body.classList.add("intro-done");
+    }, 500); // 450ms transition + небольшой запас
+    return () => window.clearTimeout(t);
+  }, [hidden]);
+
   useEffect(() => {
     startRef.current = performance.now();
     let raf = 0;
