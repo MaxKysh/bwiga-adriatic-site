@@ -114,11 +114,13 @@ function Slide({
   isActive,
   isLeaving,
   dir,
+  loaded,
 }: {
   src: string;
   isActive: boolean;
   isLeaving: boolean;
   dir: "next" | "prev";
+  loaded: boolean;
 }) {
   const cls = [
     "gslide",
@@ -129,12 +131,18 @@ function Slide({
     .filter(Boolean)
     .join(" ");
 
+  // Ленивый рендер background-image: пока слайд не «активирован» хотя бы раз
+  // (current, next, prev) — Safari iOS не декодирует JPEG в video memory.
+  // При 21 слайде × 5 blinds × 1-4MB декодированных это даёт огромный выигрыш
+  // по памяти.
+  const bg = loaded ? { backgroundImage: `url(${src})` } : undefined;
+
   return (
     <div className={cls} aria-hidden={!isActive}>
       <div className="gblinds">
         {[0, 1, 2, 3, 4].map((i) => (
           <div key={i} className="gblind">
-            <div className="gimg" style={{ backgroundImage: `url(${src})` }} />
+            <div className="gimg" style={bg} />
             <div className="gshutter" />
           </div>
         ))}
@@ -163,10 +171,25 @@ export default function Story() {
   const [idx, setIdx] = useState(0);
   const [leavingIdx, setLeavingIdx] = useState<number | null>(null);
   const [dir, setDir] = useState<"next" | "prev">("next");
-  const [paused, setPaused] = useState(false);
+  // Два независимых источника паузы:
+  //   hoverPaused — мышь/фокус над галереей (или ручная навигация).
+  //   offScreen   — стейдж не в viewport'е.
+  // Эффект auto-advance смотрит на их OR. Это важно, чтобы IntersectionObserver
+  // не «снимал» hover-паузу при возврате в viewport.
+  const [hoverPaused, setHoverPaused] = useState(false);
+  const [offScreen, setOffScreen] = useState(false);
+  const paused = hoverPaused || offScreen;
   const progressRef = useRef<HTMLDivElement>(null);
   const thumbsRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
+
+  // Какие слайды уже «активировались» — стартуем с [0, 1] (current + next).
+  // При смене idx добавляем idx, idx+1, idx-1 (purchased lookahead в обе стороны).
+  // Eviction не делаем — после полного просмотра все 21 в Set'е, но это всё
+  // ещё лучше чем все 21 одновременно при первой загрузке.
+  const [loadedSlides, setLoadedSlides] = useState<Set<number>>(
+    () => new Set([0, 1])
+  );
 
   const go = (next: number, direction: "next" | "prev") => {
     setLeavingIdx(idx);
@@ -177,6 +200,31 @@ export default function Story() {
 
   const goNext = () => go((idx + 1) % slides.length, "next");
   const goPrev = () => go((idx - 1 + slides.length) % slides.length, "prev");
+
+  // Подгружаем bg-image у [idx, idx+1, idx-1]: текущий + соседи в обе
+  // стороны (на случай Prev'а).
+  useEffect(() => {
+    setLoadedSlides((prev) => {
+      const next = new Set(prev);
+      next.add(idx);
+      next.add((idx + 1) % slides.length);
+      next.add((idx - 1 + slides.length) % slides.length);
+      return next;
+    });
+  }, [idx, slides.length]);
+
+  // Off-screen pause — пока стейдж не в viewport'е, не крутим авто-advance.
+  // Это не «гасит» hover-pause: они независимы.
+  useEffect(() => {
+    const el = stageRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => setOffScreen(!e.isIntersecting)),
+      { threshold: 0.15 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   // Auto-advance — pause on hover/focus or when reduced motion is requested.
   useEffect(() => {
@@ -287,12 +335,29 @@ export default function Story() {
     wrap.addEventListener("focusin", onEnter);
     wrap.addEventListener("focusout", onLeave);
 
+    // Off-screen pause — пока маркиза вне viewport'а, полностью останавливаем
+    // WAAPI-анимацию (не просто playbackRate=0, а anim.pause() — это снимает
+    // ленту с композитора и освобождает GPU-ресурсы). На iOS Safari это
+    // критично: бесконечная transform-анимация с will-change держит слой
+    // постоянно горячим даже когда не виден.
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) anim.play();
+          else anim.pause();
+        });
+      },
+      { rootMargin: "100px 0px" }
+    );
+    io.observe(wrap);
+
     return () => {
       wrap.removeEventListener("mouseenter", onEnter);
       wrap.removeEventListener("mouseleave", onLeave);
       wrap.removeEventListener("focusin", onEnter);
       wrap.removeEventListener("focusout", onLeave);
       if (raf != null) cancelAnimationFrame(raf);
+      io.disconnect();
       anim.cancel();
     };
   }, [marqueeItems.length]);
@@ -344,10 +409,10 @@ export default function Story() {
         <div
           className="gallery-stage"
           ref={stageRef}
-          onMouseEnter={() => setPaused(true)}
-          onMouseLeave={() => setPaused(false)}
-          onFocus={() => setPaused(true)}
-          onBlur={() => setPaused(false)}
+          onMouseEnter={() => setHoverPaused(true)}
+          onMouseLeave={() => setHoverPaused(false)}
+          onFocus={() => setHoverPaused(true)}
+          onBlur={() => setHoverPaused(false)}
           tabIndex={0}
           role="region"
           aria-label="Photo gallery"
@@ -360,6 +425,7 @@ export default function Story() {
               isActive={i === idx}
               isLeaving={i === leavingIdx}
               dir={dir}
+              loaded={loadedSlides.has(i)}
             />
           ))}
           <div className="gallery-arrows">
@@ -385,10 +451,16 @@ export default function Story() {
               key={src}
               type="button"
               className={`gthumb ${i === idx ? "is-active" : ""}`}
-              style={{ backgroundImage: `url(${src})` }}
               aria-label={`Show photo ${i + 1} of ${slides.length}`}
               onClick={() => go(i, i > idx ? "next" : "prev")}
-            />
+            >
+              {/* <img loading="lazy"> вместо background-image: браузер сам
+                  делает intersection-based decode, а на iOS Safari это
+                  избавляет от моментальной декодинг-загрузки всех 21
+                  полноразмерных JPEG'ов в видеопамять на странице. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={src} alt="" loading="lazy" decoding="async" />
+            </button>
           ))}
         </div>
       </div>
@@ -841,14 +913,20 @@ export default function Story() {
           flex: 0 0 116px;
           height: 62px;
           background-color: var(--ink-1);
-          background-size: cover;
-          background-position: center top;
           cursor: pointer;
           opacity: 0.42;
           transition: opacity 240ms var(--ease-soft);
           border: 0;
           border-radius: 4px;
           padding: 0;
+          overflow: hidden;
+        }
+        .gthumb :global(img) {
+          display: block;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: center top;
         }
         .gthumb::after {
           content: "";

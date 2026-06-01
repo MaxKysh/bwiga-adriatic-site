@@ -31,9 +31,27 @@ export default function Place() {
   const [dir, setDir] = useState<"next" | "prev">("next");
   const [paused, setPaused] = useState(false);
 
+  // Какие слайды уже «активировались» — стартуем с [0, 1]. При смене idx
+  // добавляем idx, idx+1, idx-1. На iOS Safari это не даёт декодировать
+  // все 4 JPEG'а × 5 blinds сразу при загрузке секции.
+  const [loadedSlides, setLoadedSlides] = useState<Set<number>>(
+    () => new Set([0, 1])
+  );
+
   const stageRef = useRef<HTMLDivElement>(null);
   const thumbsRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
+
+  // При смене idx подгружаем current + next + prev (lookahead в обе стороны).
+  useEffect(() => {
+    setLoadedSlides((prev) => {
+      const next = new Set(prev);
+      next.add(idx);
+      next.add((idx + 1) % PHOTOS.length);
+      next.add((idx - 1 + PHOTOS.length) % PHOTOS.length);
+      return next;
+    });
+  }, [idx]);
 
   const go = (next: number, direction: "next" | "prev") => {
     if (next === idx) return;
@@ -186,12 +204,17 @@ export default function Place() {
             ]
               .filter(Boolean)
               .join(" ");
+            // Lazy: bg-image появляется только когда слайд хоть раз был current
+            // или соседом current'а. См. loadedSlides выше.
+            const bg = loadedSlides.has(i)
+              ? { backgroundImage: `url(${src})` }
+              : undefined;
             return (
               <div key={src} className={cls} aria-hidden={i !== idx}>
                 <div className="gblinds">
                   {[0, 1, 2, 3, 4].map((b) => (
                     <div key={b} className="gblind">
-                      <div className="gimg" style={{ backgroundImage: `url(${src})` }} />
+                      <div className="gimg" style={bg} />
                       <div className="gshutter" />
                     </div>
                   ))}
@@ -238,10 +261,15 @@ export default function Place() {
               key={src}
               type="button"
               className={`gthumb ${i === idx ? "is-active" : ""}`}
-              style={{ backgroundImage: `url(${src})` }}
               aria-label={`Photo ${i + 1} of ${PHOTOS.length}`}
               onClick={() => go(i, i > idx ? "next" : "prev")}
-            />
+            >
+              {/* <img loading="lazy"> вместо background-image — браузер сам
+                  делает intersection-based decode + Safari iOS не держит
+                  все 4 полноразмерных JPEG'а в видеопамяти как при bg. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={src} alt="" loading="lazy" decoding="async" />
+            </button>
           ))}
         </div>
       </div>
@@ -670,14 +698,20 @@ export default function Place() {
           flex: 0 0 116px;
           height: 62px;
           background-color: var(--ink-1);
-          background-size: cover;
-          background-position: center top;
           cursor: pointer;
           opacity: 0.42;
           transition: opacity 240ms var(--ease-soft);
           border: 0;
           border-radius: 4px;
           padding: 0;
+          overflow: hidden;
+        }
+        .gallery-thumbs :global(.gthumb img) {
+          display: block;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: center top;
         }
         .gallery-thumbs :global(.gthumb)::after {
           content: "";

@@ -27,6 +27,24 @@ import { useEffect } from "react";
 // опаково/без масок.
 // -----------------------------------------------------------------------------
 
+// Развернуть .rh-word обратно в plain text после того как маска уже отыграла.
+// Это убирает 50-400 span'ов из DOM навсегда (страница за раз больше не
+// re-revealed — IntersectionObserver делает unobserve после первого захода),
+// освобождая композиторные слои которые Safari iOS держал в GPU-памяти.
+// el.normalize() склеивает соседние text nodes, возвращая исходный DOM.
+function unwrapWords(el: HTMLElement) {
+  el.querySelectorAll<HTMLElement>(".rh-word").forEach((span) => {
+    span.replaceWith(document.createTextNode(span.textContent ?? ""));
+  });
+  el.normalize();
+}
+
+// Сколько времени занимает heading-reveal до полного завершения: длиннейший
+// stagger (DELAY_STEP × N words) + длительность transition'а маски. Берём с
+// запасом: предполагаем до ~30 слов на заголовок ≈ 1050ms + 600ms transition
+// + 350ms запас = 2000ms. После этого можно безопасно unwrap'ать.
+const REVEAL_SAFE_MS = 2000;
+
 function wrapWordsInPlace(el: HTMLElement) {
   // Если уже обёрнуто (на случай повторного запуска эффекта) — выходим.
   if (el.querySelector(".rh-word")) return;
@@ -100,12 +118,24 @@ export default function ScrollReveal() {
       headings.forEach((h) => wrapWordsInPlace(h));
     });
 
+    // Таймеры на unwrap — храним чтобы зачистить при unmount.
+    const unwrapTimers: number[] = [];
+
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
           if (!e.isIntersecting) return;
           e.target.classList.add("is-in");
           io.unobserve(e.target);
+          // После того как маска отыграла — разворачиваем слова в plain text.
+          // Освобождает Safari iOS от композиторных слоёв (см. unwrapWords).
+          const target = e.target as HTMLElement;
+          const t = window.setTimeout(() => {
+            target
+              .querySelectorAll<HTMLElement>("h2")
+              .forEach(unwrapWords);
+          }, REVEAL_SAFE_MS);
+          unwrapTimers.push(t);
         });
       },
       { threshold: 0.1, rootMargin: "0px 0px -8% 0px" }
@@ -115,11 +145,39 @@ export default function ScrollReveal() {
     // ---- Hero H1 word-reveal --------------------------------------------
     // Тригер — body.intro-done (выставляется Preloader'ом после fade-out'а).
     // Здесь только оборачиваем слова в spans; саму анимацию запускает CSS
-    // когда .intro-done доедет.
+    // когда .intro-done доедет. После завершения reveal'а — unwrap.
     const heroH1 = document.querySelector<HTMLElement>("#hero h1");
-    if (heroH1) wrapWordsInPlace(heroH1);
+    let bodyClassObserver: MutationObserver | null = null;
+    if (heroH1) {
+      wrapWordsInPlace(heroH1);
+      const scheduleHeroUnwrap = () => {
+        const t = window.setTimeout(() => {
+          unwrapWords(heroH1);
+        }, REVEAL_SAFE_MS);
+        unwrapTimers.push(t);
+      };
+      if (document.body.classList.contains("intro-done")) {
+        scheduleHeroUnwrap();
+      } else {
+        bodyClassObserver = new MutationObserver(() => {
+          if (document.body.classList.contains("intro-done")) {
+            bodyClassObserver?.disconnect();
+            bodyClassObserver = null;
+            scheduleHeroUnwrap();
+          }
+        });
+        bodyClassObserver.observe(document.body, {
+          attributes: true,
+          attributeFilter: ["class"],
+        });
+      }
+    }
 
-    return () => io.disconnect();
+    return () => {
+      io.disconnect();
+      bodyClassObserver?.disconnect();
+      unwrapTimers.forEach((t) => window.clearTimeout(t));
+    };
   }, []);
 
   return null;

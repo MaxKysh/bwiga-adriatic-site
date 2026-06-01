@@ -139,7 +139,14 @@ img { display: block; max-width: 100%; }
 .rh-word {
   display: inline-block;
   position: relative;
-  isolation: isolate;
+  /* Раньше тут было isolation: isolate, чтобы ::after с z-index:1 не уходил
+     за пределы локального stacking context'а. Но isolation: isolate форсит
+     compositor layer на КАЖДОЕ слово — при 200-400 словах на странице iOS
+     Safari накапливает композиторные слои до OOM. Убрал. ::after всё ещё
+     корректно покрывает только слово через inset: 0 относительно
+     position: relative-ного родителя, а вне родителя z-index:1 не вызовет
+     перекрытий потому что родительские контейнеры (секции, h1/h2) имеют
+     собственные позиционные предки. */
 }
 .rh-word::after {
   content: "";
