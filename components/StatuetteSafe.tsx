@@ -6,26 +6,26 @@ import { Component, useEffect, useState, type ErrorInfo, type ReactNode } from "
 // -----------------------------------------------------------------------------
 // Safe wrapper for the WebGL Statuette.
 //
-// Two production failure modes we protect against:
+// Production failure modes:
 //
-//   1. Corporate Windows (or any device) with hardware acceleration disabled.
-//      WebGL context creation throws → R3F <Canvas> bubbles the error past
-//      Next's runtime → page shows "Application error". Fix: detect WebGL
-//      availability; render nothing if unavailable. Plus error boundary as a
-//      second line of defense.
+//   1. Corporate Windows / hardware acceleration disabled → WebGL context
+//      creation fails → render nothing. Plus error boundary.
 //
-//   2. iOS Safari OOM. Earlier we just skipped Statuette on mobile entirely,
-//      but the user wanted it back. Now: we still mount, but pass `lite` to
-//      Statuette so it switches to a lighter config (procedural mini env-map
-//      instead of the studio HDRI preset; scroll-driven rotation instead of
-//      mouse-tilt). Drops memory footprint enough to survive iOS's per-tab
-//      cap on most current devices.
+//   2. iOS OOM. iPhone 14 Pro Max должен этим сценам не подавиться, но
+//      в реальных тестах падал. Гипотеза: WebGL context + transmission
+//      framebuffer держатся в GPU-памяти даже когда статуэтка off-screen
+//      (frameloop пауза не освобождает ресурсы), и на фоне аккумулирующихся
+//      изображений секций iOS прибивает таб. Решение в Statuette.jsx:
+//      агрессивный unmount Canvas'а когда off-screen (Three.js диспозит
+//      контекст), + drop transmission на lite (это самая дорогая фича,
+//      и она и так не работает с DOM-video-фоном), + 2× меньше геометрия.
+//      Не скипаем iOS — пробуем удержать с этими оптимизациями.
 //
 // Decision tree:
 //   prefers-reduced-motion  → skip 3D
 //   no WebGL                → skip 3D
 //   mobile (≤1024 / coarse) → render <Statuette lite />
-//   otherwise               → render <Statuette /> (full desktop config)
+//   desktop                 → render <Statuette /> (full config)
 // -----------------------------------------------------------------------------
 
 type Decision = "checking" | "skip" | "render-full" | "render-lite";

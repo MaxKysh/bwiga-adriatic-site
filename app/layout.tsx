@@ -23,10 +23,11 @@ const inter = Inter({
 // Open Graph and Twitter tags so all three audiences (Google, Facebook /
 // LinkedIn, Twitter / X) get matching previews.
 //
-// OG_IMAGE_PATH carries a `?v=N` cache-bust suffix — bump it whenever the
-// og-image.jpg content changes so Telegram / Facebook / Twitter re-fetch
-// instead of serving a stale cached preview. Aggressive crawler caches
-// can hold an image for weeks otherwise.
+// OG_IMAGE_PATH — путь к открытому графу. Telegram/Facebook/LinkedIn
+// кэшируют OG-картинку отдельно от страницы, и query-параметры (?v=N)
+// у них ненадёжно пробивают image-cache. Самый верный способ обновить
+// превью — переименовать файл целиком, тогда URL становится полностью
+// новым, и crawler гарантированно делает свежий fetch.
 // -----------------------------------------------------------------------------
 const SITE_TITLE =
   "BWiGA Adriatic Edition — Balkan Web3 & iGaming Awards · September 30, 2026";
@@ -35,7 +36,7 @@ const SITE_TITLE =
 const SITE_DESCRIPTION = content.hero.tagline_primary;
 const SITE_NAME = "BWiGA Adriatic Edition";
 const SITE_URL = "https://www.adriaticawards.com";
-const OG_IMAGE_PATH = "/og-image.jpg?v=2";
+const OG_IMAGE_PATH = "/og-cover.jpg";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

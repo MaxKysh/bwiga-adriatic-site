@@ -311,10 +311,11 @@ function StatuetteScene({
       bevelThickness: 0.06,
       bevelSize: 0.06,
       bevelSegments: 2,
-      // curveSegments: 32 → 16. Делит количество tri на скруглённых краях
-      // плиты пополам — заметно дешевле и vertex stage, и transmission pass,
-      // визуально на bbox 575×790 силуэта разница в кривизне ~незаметна.
-      curveSegments: 16,
+      // curveSegments: 32 → 16 (desktop), 8 (lite/mobile). Делит количество
+      // tri на скруглённых краях пополам ещё раз для mobile — заметно
+      // дешевле и vertex stage, и память geometry buffer'ов. На маленьком
+      // mobile-canvas разница в кривизне силуэта неразличима.
+      curveSegments: lite ? 8 : 16,
     }
     const geom = new THREE.ExtrudeGeometry(plateShape, ext)
     geom.translate(0, 0, -depth / 2) // центрируем по Z
@@ -333,7 +334,7 @@ function StatuetteScene({
     }
     uv.needsUpdate = true
     return geom
-  }, [plateShape, thicknessMm])
+  }, [plateShape, thicknessMm, lite])
 
   // Геометрия основания (extrude + поворот плашмя). slabHeightCm понижен
   // 1.2 → 0.8 (×1.5 тоньше). Значение должно совпадать с slabHeight в
@@ -346,12 +347,12 @@ function StatuetteScene({
       bevelThickness: 0.08,
       bevelSize: 0.08,
       bevelSegments: 2,
-      curveSegments: 16,
+      curveSegments: lite ? 8 : 16,
     }
     const geom = new THREE.ExtrudeGeometry(baseShape, ext)
     geom.translate(0, 0, -slabHeightCm / 2)
     return geom
-  }, [baseShape])
+  }, [baseShape, lite])
 
   // Позиция основания: его верх на расстоянии gap от низа тела пластины.
   // slabHeight 0.8 синхронизирован с baseGeometry выше.
@@ -387,7 +388,13 @@ function StatuetteScene({
               // синяя печать теперь читается приглушённее на ~30%.
               color="#b8b8b8"
               transparent
-              transmission={0.5}
+              // transmission на lite = 0 (выключен полностью). Это самая
+              // дорогая фича MeshPhysicalMaterial — каждый кадр отдельный
+              // framebuffer-pass для refraction. На mobile это главный
+              // источник GPU-памяти и stutter'а; визуально refraction всё
+              // равно не работает с DOM-video-фоном (transmission сэмплит
+              // только WebGL-сцену). На desktop оставляем 0.5.
+              transmission={lite ? 0 : 0.5}
               thickness={1.2}
               roughness={0.05}
               ior={1.49}
@@ -488,12 +495,19 @@ export function Statuette({
     return () => io.disconnect()
   }, [])
 
-  // Lite env-map применяется через <LiteEnvProvider /> внутри Canvas
-  // (см. ниже). Здесь не делаем useMemo — текстура живёт внутри Provider'а.
+  // На lite (mobile) полностью UNMOUNT'им Canvas когда статуэтка off-screen.
+  // Frameloop="never" останавливает только rendering, но WebGL context +
+  // transmission framebuffer + textures + materials остаются в GPU-памяти.
+  // На iPhone эта аккумулирующаяся GPU-память + ресурсы страницы (image
+  // секций, video, animations) приводят к OOM. Полный unmount Canvas →
+  // Three.js dispose'ит контекст → GPU-память освобождается.
+  // На desktop оставляем mounted-режим (там лишний remount при возврате
+  // к Hero бесполезен и заметнее как «мигание»).
+  const shouldRenderCanvas = lite ? active : true
 
   return (
     <div ref={wrapRef} className={className} style={{ width: '100%', height: '100%' }}>
-      <Canvas
+      {shouldRenderCanvas && <Canvas
         camera={{ position: [0, 4, 80], fov: 28 }}
         gl={{ antialias: true, alpha: true }}
         // Cap DPR at 1 (was 1.5). На 4K мониторе 1.5× давало ~8M*1.5 = 12M
@@ -551,7 +565,7 @@ export function Statuette({
             window mousemove → лерп в useFrame. Драг-to-rotate конфликтовал
             бы с этим. Зум тоже отключён — статуэтка показывается на
             фиксированной дистанции. */}
-      </Canvas>
+      </Canvas>}
     </div>
   )
 }

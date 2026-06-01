@@ -196,6 +196,16 @@ body.intro-done .hero .rh-word::after {
   overflow: hidden;
   vertical-align: top;
   position: relative;
+  /* iOS Safari quirk: overflow:hidden на inline-block иногда НЕ клипает
+     transformed children — strip с translateY рендерится за пределы
+     digit-окошка и видны соседние цифры одновременно. Принудительный
+     compositor-layer (translateZ + contain:paint) заставляет Safari
+     уважать клип. */
+  transform: translateZ(0);
+  contain: paint;
+}
+.counter-strip {
+  line-height: 1;
 }
 .counter-strip {
   display: flex;
