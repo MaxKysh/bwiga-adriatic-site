@@ -1,10 +1,10 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useState } from "react";
 import content from "@/data/content.json";
 import YouTubeModal from "./YouTubeModal";
+import StatuetteSafe from "./StatuetteSafe";
 import { mailto } from "@/lib/mailto";
 import {
   NOMINATION_BODY,
@@ -13,14 +13,10 @@ import {
   WHITELIST_SUBJECT,
 } from "@/lib/mail-templates";
 
-// Statuette is R3F + DOM-heavy. SSR-skip it and lazy-load on the client only.
-const Statuette = dynamic(
-  () => import("./Statuette").then((m) => m.Statuette ?? m.default),
-  {
-    ssr: false,
-    loading: () => <div className="statuette-skeleton">Statuette · loading</div>,
-  }
-);
+// Statuette is wrapped in StatuetteSafe — capability check (reduced-motion,
+// mobile, WebGL availability) + error boundary. На mobile вообще не
+// монтируется → нет OOM-crash'ей на iOS. На corporate Windows без WebGL —
+// нет «Application error» страницы.
 
 const PAST_LABEL = "Past Editions";
 const SCROLL_LABEL = "scroll";
@@ -78,7 +74,7 @@ export default function Hero() {
           </div>
 
           <div className="hero-stage">
-            <Statuette />
+            <StatuetteSafe />
           </div>
 
           <div className="past">

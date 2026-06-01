@@ -135,7 +135,14 @@ export default function People() {
 
     const onDown = (e: PointerEvent) => {
       if (isGrid) return;
-      if (e.pointerType === "mouse" && e.button !== 0) return;
+      // Drag-to-pan только для мыши на десктопе. На touch/pen НЕ запускаем
+      // JS-перехват: трек имеет overflow-x:auto, нативный браузерный скролл
+      // сам обработает горизонтальный свайп и пропустит вертикальный на
+      // page scroll. setPointerCapture'ом ранее ловили всё подряд — после
+      // tap'а внутри слайдера вертикальный свайп начинал «зависать», т.к.
+      // pointermove уходил в драгер, а не в скролл страницы.
+      if (e.pointerType !== "mouse") return;
+      if (e.button !== 0) return;
       draggingRef.current = {
         active: true,
         startX: e.clientX,

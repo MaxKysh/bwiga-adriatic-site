@@ -58,7 +58,10 @@
 
 * , *::before, *::after { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+/* scroll-behavior: smooth ранее стоял на html — на iOS Safari он
+   конфликтует с native инерцией скролла (рывки, отскоки, фризы при
+   быстром свайпе). Anchor-клики теперь скроллятся мгновенно (что
+   практически незаметно), зато native scroll работает чисто. */
 
 body {
   background: var(--ink-0);
