@@ -355,13 +355,16 @@ export default function Sidebar() {
         }
 
         @media (max-width: 1023px) {
-          /* ---- Toggle FAB: bottom-right, плоская, инверсия задника ----
-             backdrop-filter: invert(1) инвертирует то, что отрендерено ЗА
-             кнопкой (hero-видео), в пределах её скруглённого box'а. На ярком
-             фоне читается как тёмная. Собственные дети (палочки) фильтром НЕ
-             затрагиваются — остаются чисто белыми. В отличие от
-             mix-blend-mode, backdrop-filter не страдает от изоляции
-             stacking-контекста у fixed-элемента. Без градиента, без тени. */
+          /* ---- Toggle FAB: bottom-right, плоская, тёмная полупрозрачная.
+             Раньше тут стоял backdrop-filter: invert(1) + mix-blend-mode:
+             difference на палочках для эффекта «всегда контрастно на любом
+             фоне». На iOS Safari эта комбинация на position: fixed элементе
+             даёт серьёзную GPU-нагрузку: фильтр backdrop'а пересчитывается
+             на каждый scroll-frame (backdrop меняется), плюс blend mode
+             держит дополнительный compositor layer. Накапливалась GPU-память
+             → таб умирал OOM'ом после пары прокруток.
+             Текущая версия — просто solid dark с лёгкой white-border'ой и
+             чисто белыми палочками. Не такая нарядная, но iOS не валит. */
           .rail-toggle {
             display: grid;
             place-items: center;
@@ -371,49 +374,32 @@ export default function Sidebar() {
             width: 52px;
             height: 52px;
             padding: 0;
+            background: rgba(0, 0, 0, 0.55);
             border: 0;
-            background: transparent;
             box-shadow: none;
             border-radius: 14px;
             cursor: pointer;
             z-index: 70;
-            /* Полная инверсия фона. opacity(0.5) пробовали — давала плоский
-               серый (полупрозрачность гасит инверсию), поэтому invert(1). */
-            -webkit-backdrop-filter: invert(1);
-            backdrop-filter: invert(1);
             transition: transform 200ms var(--ease-soft),
               background 360ms var(--ease-soft);
           }
           .rail-toggle:active {
             transform: scale(0.94);
           }
-          /* Открыто: за кнопкой сплошной тёмный backdrop меню. Гасим фильтр
-             и даём чуть-светлее-фона полупрозрачную заливку, чтобы кнопка
-             слегка выделялась на тёмном (не сливалась). */
+          /* Открыто: тело чуть светлее тёмного backdrop'а меню, чтобы кнопка
+             слегка выделялась и белый крестик уверенно читался. */
           .rail-toggle.is-open {
-            -webkit-backdrop-filter: none;
-            backdrop-filter: none;
             background: rgba(255, 255, 255, 0.12);
           }
-          /* Палочки толще (3px). mix-blend-mode: difference — блендятся
-             против инвертированного тела кнопки, поэтому ВСЕГДА контрастят:
-             на тёмном теле (яркий hero) выглядят белыми, на светлом теле
-             (тёмный hero, где invert делает тело белым) становятся тёмными.
-             Решает проблему «белые палочки на белом теле». */
+          /* Палочки толще (3px), сплошные белые. Без mix-blend-mode —
+             держим GPU-cost на нуле. */
           .rail-toggle-bar {
             position: absolute;
-            z-index: 1;
             width: 24px;
             height: 3px;
             border-radius: 3px;
             background: #fff;
-            mix-blend-mode: difference;
             transition: transform 400ms var(--ease-spring);
-          }
-          /* В открытом меню тело — предсказуемо тёмное (rgba white 0.12 на
-             тёмном backdrop'е), обычные белые палочки читаются без блендинга. */
-          .rail-toggle.is-open .rail-toggle-bar {
-            mix-blend-mode: normal;
           }
           .rail-toggle-bar.bar1 {
             transform: translateY(-5px);
@@ -477,15 +463,16 @@ export default function Sidebar() {
           .rail--open .rail-foot {
             pointer-events: auto;
           }
-          /* Разделительная линия между блоками (меню+кредиты, низ ~90px) и
-             кнопкой внизу (верх ~70px). На 76px. Заметнее, чем раньше
-             (0.1 → 0.22). Гаснет вместе с панелью (часть .rail). */
+          /* Разделительная линия — ровно посередине между низом последнего
+             пункта меню (.rail-nav bottom: 100px) и верхом кнопки (bottom
+             18 + height 52 = top 70px). Центр: (100+70)/2 = 85px. Гаснет
+             вместе с панелью (часть .rail). */
           .rail::after {
             content: "";
             position: absolute;
             left: 24px;
             right: 24px;
-            bottom: 76px;
+            bottom: 85px;
             height: 1px;
             background: rgba(255, 255, 255, 0.22);
           }

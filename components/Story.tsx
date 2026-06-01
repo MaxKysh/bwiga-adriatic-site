@@ -603,7 +603,9 @@ export default function Story() {
         .gallery-head {
           display: flex;
           justify-content: space-between;
-          align-items: baseline;
+          /* center, не baseline: если eye переносится в 2 строки, счётчик
+             всё равно остаётся вертикально по центру заголовочного блока. */
+          align-items: center;
           gap: 32px;
           padding: 0 clamp(28px, 4vw, 64px);
           /* Sits flush above the stage — no hairline, no margin. */
@@ -616,16 +618,20 @@ export default function Story() {
           letter-spacing: 0.18em;
           text-transform: uppercase;
           color: var(--paper-2);
-          line-height: 1;
+          /* 1.35 даёт воздух между строками когда заголовок переносится. */
+          line-height: 1.35;
         }
         .gallery-head .meta {
           display: inline-flex;
           align-items: baseline;
-          gap: 4px;
+          gap: 6px;
           font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, monospace;
           font-size: var(--fs-eyebrow);
           color: var(--paper-2);
           line-height: 1;
+          /* Никогда не переносить «02 / 04» — даже если родитель ужмётся. */
+          white-space: nowrap;
+          flex-shrink: 0;
         }
         .gallery-head .meta b {
           font-family: var(--font-inter);
