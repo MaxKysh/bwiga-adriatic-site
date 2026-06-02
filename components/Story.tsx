@@ -30,7 +30,7 @@ const STORY_STATS: Stat[] = [
 
 const GALLERY_EYEBROW = "Photo Gallery · Belgrade '26 · Tivat '25";
 const MEDIA_EYEBROW = "Top Media About Us";
-const MEDIA_META = "10 outlets · 2024–2026";
+const MEDIA_META = "11 outlets · 2024–2026";
 
 // Slide auto-advance interval (matches design's --auto-ms default).
 const AUTO_MS = 5500;
@@ -73,15 +73,16 @@ const AVAILABLE_GALLERY = [
 // adds a short tagline per outlet — we lift those verbatim. Fall back to a
 // generic "Coverage" tag for anything not in the lookup.
 const MEDIA_DESCRIPTORS: Record<string, string> = {
-  "Business Insider": "News · 30+ nominees",
-  Benzinga: "Press release · Belgrade '26",
+  "Business Insider": "News · Montenegro '26",
   "CoinMarketCap": "Community feature",
   Binance: "Square · long read",
-  "Bitget News": "Exchange newsroom",
-  "Bitget (Video Report)": "Instagram reel",
+  Benzinga: "Press release · Montenegro '26",
+  "Forbes Liberia": "News · Montenegro '26",
   Techbullion: "100 global Web3 & AI projects",
-  "iGaming News - Top-5 Events": "Top-5 events to watch · 2026",
+  "Bitget (Video Report)": "Instagram reel",
+  "Bitget News": "Exchange newsroom",
   "Coinstelegram - Top-20": "Top-20 people running crypto",
+  "iGaming News - Top-5 Events": "Top-5 events to watch · 2026",
   Coingabbar: "Adriatic '25 · Montenegro",
 };
 

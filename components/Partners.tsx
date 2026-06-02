@@ -52,6 +52,7 @@ const INVERT_LOGOS = new Set<string>([
   "mmpro-group",
   "gordon",
   "kripto-dnevnik",
+  "100hp-game",
   // Media partners
   "coin-gabbar",
   "bitcoinist",
@@ -64,6 +65,8 @@ const INVERT_LOGOS = new Set<string>([
   "crypto-12",
   "cpa-club",
   "vizi",
+  "chainwire",
+  "playnewswire",
 ]);
 
 type Tile = { name: string; slug: string; logo: string; url?: string };

@@ -169,24 +169,28 @@
     ],
     "media_mentions": [
       {
+        "name": "Forbes Liberia",
+        "url": "https://forbesliberia.com/article?slug=the-third-bwiga-will-take-place-in-montenegro-in-september"
+      },
+      {
         "name": "Business Insider",
-        "url": "https://markets.businessinsider.com/news/currencies/bwiga-awarded-over-30-nominees-in-belgrade-1035993680"
+        "url": "https://markets.businessinsider.com/news/currencies/bwiga-will-be-held-in-montenegro-again-in-september-1036194396"
+      },
+      {
+        "name": "CoinMarketCap",
+        "url": "https://coinmarketcap.com/community/articles/6a15ad4531188f7fda92bca6/"
+      },
+      {
+        "name": "Binance",
+        "url": "https://www.binance.com/en/square/post/327328489493777"
       },
       {
         "name": "Benzinga",
-        "url": "https://www.benzinga.com/pressreleases/26/02/50876944/bwiga-2026-announces-web3-and-igaming-awards-ceremony-in-belgrade"
+        "url": "https://www.benzinga.com/pressreleases/26/05/52779991/bwiga-will-be-held-in-montenegro-again-in-september"
       },
       {
         "name": "Techbullion",
         "url": "https://techbullion.com/bwiga-awards-brings-together-100-global-web3-and-ai-projects/"
-      },
-      {
-        "name": "CoinMarketCap",
-        "url": "https://coinmarketcap.com/community/articles/69a14133095eb16805224561/"
-      },
-      {
-        "name": "Binance",
-        "url": "https://www.binance.com/en/square/post/297153121179185"
       },
       {
         "name": "Bitget (Video Report)",
@@ -433,6 +437,12 @@
         "name": "Dima Mikhailov",
         "photo": "assets/speakers/jury/dima-mikhailov.webp",
         "title": "Founding Partner at DMTech.vc"
+      },
+      {
+        "slug": "guy-yanpolskiy",
+        "name": "Guy Yanpolskiy",
+        "photo": "assets/speakers/jury/guy-yanpolskiy.webp",
+        "title": "Forbes Business Council. Co-founder of WoW Summit."
       }
     ],
     "speakers": [
@@ -498,6 +508,18 @@
         "name": "Dejan Vranjanin",
         "photo": "assets/speakers/speakers/dejan-vranjanin.webp",
         "title": "Head of Account Development at Endorphina"
+      },
+      {
+        "slug": "milica-jovanovic",
+        "name": "Milica Jovanovic",
+        "photo": "assets/speakers/speakers/milica-jovanovic.webp",
+        "title": "CBDO at Atlaslive"
+      },
+      {
+        "slug": "ivan-jolicic",
+        "name": "Ivan Joličić",
+        "photo": "assets/speakers/speakers/ivan-jolicic.webp",
+        "title": "Co-Founder & CTO at Perper.net. CEO & Founder of Oraicle.me."
       }
     ],
     "program_status_label": "Program under development",
@@ -753,6 +775,13 @@
         "logo_source": "https://adriaticawards.com/dist/img/KriptoDnevnik.png",
         "logo_local": "assets/partners/kripto-dnevnik.webp",
         "url": "https://kriptodnevnik.com/"
+      },
+      {
+        "name": "100HP Gaming",
+        "slug": "100hp-game",
+        "logo_source": "https://100hp.game/img/favicons/favicon.svg",
+        "logo_local": "assets/partners/100hp-game.svg",
+        "url": "https://100hp.game/"
       }
     ],
     "logo_download_todo": "Run `python3 scripts/download-external-assets.py` to download partner & media partner logos.",
@@ -858,6 +887,20 @@
         "logo_source": "https://adriaticawards.com/dist/img/vizi.png",
         "logo_local": "assets/media-partners/vizi.webp",
         "url": "https://www.vizii.io/"
+      },
+      {
+        "name": "Chainwire",
+        "slug": "chainwire",
+        "logo_source": "https://chainwire.org/wp-content/uploads/2025/07/Logo_CW_WidthMF.png",
+        "logo_local": "assets/media-partners/chainwire.png",
+        "url": "https://chainwire.org/"
+      },
+      {
+        "name": "PlayNewsWire",
+        "slug": "playnewswire",
+        "logo_source": "https://playnewswire.com/wp-content/uploads/2025/07/Final_Logo_PlayNewsWireMF-341x70.png",
+        "logo_local": "assets/media-partners/playnewswire.png",
+        "url": "https://playnewswire.com/"
       }
     ],
     "note_removed": "'Gambling Talk' appears in both sponsor and media partner lists on adriaticawards.com. Listed only once, under sponsors, to avoid duplicate display."
