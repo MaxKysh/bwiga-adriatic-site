@@ -53,7 +53,11 @@ export default function Hero() {
         muted
         loop
         playsInline
-        preload="auto"
+        /* preload="metadata" вместо "auto" — браузер не качает 3-7 MB видео
+           до того как страница отрендерилась. autoPlay всё равно запустит
+           загрузку как только сможет, но LCP/FCP уже отыграют. Poster
+           показывается как фон сразу, юзер не видит «дыру». */
+        preload="metadata"
         poster="/img/hero-poster.jpg"
         aria-hidden
       >

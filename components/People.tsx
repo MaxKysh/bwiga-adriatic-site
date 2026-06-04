@@ -69,6 +69,21 @@ export default function People() {
   const [canPrev, setCanPrev] = useState(false);
   const [canNext, setCanNext] = useState(true);
 
+  // Двухфазное скрытие карточек при смене таба:
+  //   Phase A — карточка получает `.is-hidden` → CSS-transition opacity 1→0
+  //   Phase B — через 260ms карточка получает `.is-collapsed` (display:none) →
+  //             убирается из layout flow (важно для grid mode, иначе
+  //             скрытые карточки заняли бы ячейки сетки → пустоты сверху).
+  // Симметрично для появления: уходим из collapsed → вешаем `.is-entering`
+  // (opacity:0) → на следующий кадр снимаем класс → transition 0→1.
+  // collapsedSlugs хранит карточки, которые сейчас display:none.
+  // enteringSlugs хранит карточки, которые только что вышли из display:none
+  // и ждут tick'а чтобы запустить fade-in.
+  // Без явного generic. Inference даст широкий тип, но Set#has/add/delete
+  // принимают unknown, поэтому код типизируется корректно.
+  const [collapsedSlugs, setCollapsedSlugs] = useState(() => new Set());
+  const [enteringSlugs, setEnteringSlugs] = useState(() => new Set());
+
   const trackRef = useRef<HTMLUListElement>(null);
   const draggingRef = useRef({ active: false, startX: 0, startScroll: 0, moved: false });
 
@@ -105,6 +120,53 @@ export default function People() {
     t.scrollTo({ left: 0, behavior: reduced ? "auto" : "smooth" });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter]);
+
+  // ---- Двухфазная анимация при смене фильтра ---------------------------------
+  // См. комментарий у collapsedSlugs/enteringSlugs выше.
+  useEffect(() => {
+    const isVisibleFor = (c: Card) =>
+      filter === "all" || c.role === filter;
+
+    // Phase 1 (immediate): карточки которые сейчас collapsed но должны быть
+    // видны → убираем display:none и помечаем как «entering» (opacity:0).
+    setCollapsedSlugs((prev) => {
+      const entering = new Set();
+      all.forEach((c) => {
+        if (isVisibleFor(c) && prev.has(c.slug)) entering.add(c.slug);
+      });
+      if (entering.size > 0) {
+        setEnteringSlugs(entering);
+        // Двойной rAF, чтобы браузер успел применить opacity:0 в первом
+        // кадре, и только потом запустил transition к opacity:1.
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => setEnteringSlugs(new Set()));
+        });
+      }
+      if (entering.size === 0) return prev;
+      const next = new Set(prev);
+      entering.forEach((s) => next.delete(s));
+      return next;
+    });
+
+    // Phase 2 (через 260ms): карточки которые должны быть скрыты → даём им
+    // отыграть opacity-fade (.is-hidden уже стоит из render'а ниже), затем
+    // снимаем из layout через display:none.
+    const t = window.setTimeout(() => {
+      setCollapsedSlugs((prev) => {
+        const next = new Set(prev);
+        let changed = false;
+        all.forEach((c) => {
+          if (!isVisibleFor(c) && !next.has(c.slug)) {
+            next.add(c.slug);
+            changed = true;
+          }
+        });
+        return changed ? next : prev;
+      });
+    }, 260);
+
+    return () => window.clearTimeout(t);
+  }, [filter, all]);
 
   // ---- Arrow click handlers -------------------------------------------------
   const stepWidth = () => {
@@ -328,10 +390,21 @@ export default function People() {
           <ul className={`people-track ${isGrid ? "is-grid" : ""}`} ref={trackRef}>
             {all.map((c) => {
               const hidden = filter !== "all" && c.role !== filter;
+              const collapsed = collapsedSlugs.has(c.slug);
+              const entering = enteringSlugs.has(c.slug);
+              const cls = [
+                "pcard",
+                hidden ? "is-hidden" : "",
+                collapsed ? "is-collapsed" : "",
+                entering ? "is-entering" : "",
+                c.featured ? "is-featured" : "",
+              ]
+                .filter(Boolean)
+                .join(" ");
               return (
                 <li
                   key={c.slug}
-                  className={`pcard ${hidden ? "is-hidden" : ""} ${c.featured ? "is-featured" : ""}`}
+                  className={cls}
                   data-role={c.role}
                 >
                   <div className="pcard-photo">
@@ -341,6 +414,12 @@ export default function People() {
                       alt={c.name}
                       loading="lazy"
                       decoding="async"
+                      /* Intrinsic ratio для CLS-free лоада. Реальный размер
+                         задаётся CSS (.pcard-photo img: width/height 100%
+                         + object-fit cover), браузер только использует
+                         attrs для резервирования места. */
+                      width="200"
+                      height="200"
                     />
                   </div>
                   <span className="pcard-role">{c.roleLabel}</span>
@@ -874,15 +953,27 @@ export default function People() {
           text-overflow: ellipsis;
         }
 
-        /* Hidden by filter */
+        /* Двухфазное скрытие карточки при смене фильтра:
+           Phase 1: .is-hidden → opacity 1→0 (CSS-transition 260ms, см. выше).
+           Phase 2: .is-collapsed (JS добавляет после 260ms) → display:none →
+                    уходит из layout. Делать сразу display:none нельзя, transition
+                    бы не отработал. Так же делать сразу width:0 тоже плохо —
+                    Chromium-on-Windows держал min-width:auto на flex-item и
+                    intrinsic grid-cell, скрытые карточки занимали ячейки сетки. */
         .pcard.is-hidden {
           opacity: 0;
-          transform: translateY(8px) scale(0.96);
+          transform: translateY(6px) scale(0.96);
           pointer-events: none;
-          width: 0 !important;
-          margin-right: calc(-1 * clamp(14px, 1.4vw, 22px));
-          padding-left: 0;
-          padding-right: 0;
+        }
+        .pcard.is-collapsed {
+          display: none !important;
+        }
+        /* .is-entering — карточка только что вышла из display:none (Phase 1
+           обратного направления). Стартует с opacity:0, затем JS снимает класс
+           на следующем кадре → transition разгоняет до opacity:1. */
+        .pcard.is-entering {
+          opacity: 0;
+          transform: scale(0.96);
         }
 
         /* Grid mode */

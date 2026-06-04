@@ -266,9 +266,17 @@ export default function Place() {
             >
               {/* <img loading="lazy"> вместо background-image — браузер сам
                   делает intersection-based decode + Safari iOS не держит
-                  все 4 полноразмерных JPEG'а в видеопамяти как при bg. */}
+                  все 4 полноразмерных JPEG'а в видеопамяти как при bg.
+                  width/height — intrinsic ratio для CLS. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={src} alt="" loading="lazy" decoding="async" />
+              <img
+                src={src}
+                alt=""
+                loading="lazy"
+                decoding="async"
+                width="116"
+                height="62"
+              />
             </button>
           ))}
         </div>

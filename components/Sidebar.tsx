@@ -37,6 +37,17 @@ export default function Sidebar() {
     let rafId = 0;
     const update = () => {
       rafId = 0;
+      // Bottom-edge case: если долистали страницу до конца (с запасом 4px на
+      // sub-pixel rounding), форсим active на последний пункт. Иначе для
+      // коротких секций типа Footer'а триггер-линия может никогда не попасть
+      // в [top, bottom) — страница просто не докрутится так далеко.
+      const atBottom =
+        window.innerHeight + window.scrollY >=
+        document.documentElement.scrollHeight - 4;
+      if (atBottom) {
+        setActive(ids[ids.length - 1]);
+        return;
+      }
       const triggerY = window.innerHeight * 0.35;
       let currentId = ids[0];
       for (const id of ids) {
@@ -63,6 +74,48 @@ export default function Sidebar() {
       window.removeEventListener("resize", onScroll);
       if (rafId) cancelAnimationFrame(rafId);
     };
+  }, []);
+
+  // Smooth-scroll по якорям через JS вместо CSS `scroll-behavior: smooth`
+  // на <html>. Глобальный CSS-вариант на iOS Safari ломал свайп-инерцию
+  // (свайпы становились рывковыми, ScrollTo-вызовы из браузера тоже
+  // anim'ились). JS-обработчик отрабатывает ТОЛЬКО на клик по anchor'у,
+  // нативный свайп остаётся чистым. Делегированный listener — один на body.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+    const onClick = (e: MouseEvent) => {
+      // Игнорируем модифицированные клики (Ctrl/Cmd+click — open in new tab).
+      if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)
+        return;
+      // Только левая кнопка.
+      if (e.button !== 0) return;
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+      const a = target.closest('a[href^="#"]') as HTMLAnchorElement | null;
+      if (!a) return;
+      const href = a.getAttribute("href");
+      if (!href || href === "#") return;
+      const id = href.slice(1);
+      const el = document.getElementById(id);
+      if (!el) return;
+      e.preventDefault();
+      const top = el.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({
+        top,
+        behavior: reducedMotion ? "auto" : "smooth",
+      });
+      // Обновим URL hash без двойного скролла (history API, не location.hash).
+      try {
+        history.pushState(null, "", `#${id}`);
+      } catch {
+        /* iOS PWA / privacy modes могут блокировать pushState — silent. */
+      }
+    };
+    document.addEventListener("click", onClick);
+    return () => document.removeEventListener("click", onClick);
   }, []);
 
   // Lock background scroll while the mobile drawer is open.

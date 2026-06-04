@@ -96,6 +96,13 @@ export default function ScrollReveal() {
     if (typeof window === "undefined") return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
+    // На узких viewport'ах (≤767px) отключаем per-word word-split для
+    // секционных h2: Lighthouse считал 100+ span'ов с transition как
+    // «non-composited animations», что валит Performance score на mobile.
+    // Section fade-up на mobile остаётся (это один transform на секцию,
+    // дешёвый). Заголовки просто проявляются вместе с секцией.
+    const skipWordSplit = window.matchMedia("(max-width: 767px)").matches;
+
     // ---- Section fade-up + h2 word-reveal -------------------------------
     const sections = Array.from(
       document.querySelectorAll<HTMLElement>("main section")
@@ -113,10 +120,12 @@ export default function ScrollReveal() {
       toReveal.push(s);
     });
 
-    toReveal.forEach((section) => {
-      const headings = section.querySelectorAll<HTMLElement>("h2");
-      headings.forEach((h) => wrapWordsInPlace(h));
-    });
+    if (!skipWordSplit) {
+      toReveal.forEach((section) => {
+        const headings = section.querySelectorAll<HTMLElement>("h2");
+        headings.forEach((h) => wrapWordsInPlace(h));
+      });
+    }
 
     // Таймеры на unwrap — храним чтобы зачистить при unmount.
     const unwrapTimers: number[] = [];
@@ -146,7 +155,10 @@ export default function ScrollReveal() {
     // Тригер — body.intro-done (выставляется Preloader'ом после fade-out'а).
     // Здесь только оборачиваем слова в spans; саму анимацию запускает CSS
     // когда .intro-done доедет. После завершения reveal'а — unwrap.
-    const heroH1 = document.querySelector<HTMLElement>("#hero h1");
+    // На mobile тоже скипаем (выше fold'а, прямо влияет на FCP/LCP).
+    const heroH1 = skipWordSplit
+      ? null
+      : document.querySelector<HTMLElement>("#hero h1");
     let bodyClassObserver: MutationObserver | null = null;
     if (heroH1) {
       wrapWordsInPlace(heroH1);

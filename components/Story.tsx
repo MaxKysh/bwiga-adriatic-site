@@ -458,9 +458,17 @@ export default function Story() {
               {/* <img loading="lazy"> вместо background-image: браузер сам
                   делает intersection-based decode, а на iOS Safari это
                   избавляет от моментальной декодинг-загрузки всех 21
-                  полноразмерных JPEG'ов в видеопамять на странице. */}
+                  полноразмерных JPEG'ов в видеопамять на странице.
+                  width/height — intrinsic ratio для CLS. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={src} alt="" loading="lazy" decoding="async" />
+              <img
+                src={src}
+                alt=""
+                loading="lazy"
+                decoding="async"
+                width="116"
+                height="62"
+              />
             </button>
           ))}
         </div>
