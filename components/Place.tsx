@@ -19,6 +19,15 @@ const PHOTOS = [
   "/place-photos/Place4.jpg",
 ];
 
+// Pre-generated thumbs (232px wide webp, ~5 KB each). См.
+// scripts/gen-thumbs.mjs — конвертирует JPG → WebP при ресайзе. Оригиналы
+// (JPG) остаются для большого слайда, thumbs используются только в strip'е.
+function toThumbPath(src: string): string {
+  const lastSlash = src.lastIndexOf("/");
+  const lastDot = src.lastIndexOf(".");
+  return src.slice(0, lastSlash) + "/thumbs" + src.slice(lastSlash, lastDot) + ".webp";
+}
+
 const AUTO_MS = 5500;
 const TRANSITION_MS = 800;
 
@@ -264,13 +273,12 @@ export default function Place() {
               aria-label={`Photo ${i + 1} of ${PHOTOS.length}`}
               onClick={() => go(i, i > idx ? "next" : "prev")}
             >
-              {/* <img loading="lazy"> вместо background-image — браузер сам
-                  делает intersection-based decode + Safari iOS не держит
-                  все 4 полноразмерных JPEG'а в видеопамяти как при bg.
-                  width/height — intrinsic ratio для CLS. */}
+              {/* Thumb-версия из /place-photos/thumbs/ (232px webp, ~5 KB).
+                  Lighthouse возмущался полноразмерными JPG (~400 KB каждое)
+                  для 116×62 display. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={src}
+                src={toThumbPath(src)}
                 alt=""
                 loading="lazy"
                 decoding="async"
