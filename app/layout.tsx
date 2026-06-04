@@ -104,20 +104,19 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <head>
-        {/* Preload hero-poster — это LCP-кандидат на mobile (full-bleed bg
-            image на hero, ~309 KB). С preload + fetchPriority="high"
-            браузер начинает качать его в первой же группе запросов,
-            опережая non-critical assets. На desktop эффект слабее, но
-            тоже полезен. */}
+      <body className={`${inter.variable} antialiased`}>
+        {/* Preload hero-poster (LCP-кандидат на mobile, ~309 KB).
+            <link rel="preload"> ставим прямо в body — React 18 Float
+            автоматически переносит его в <head>. Если оборачивать в явный
+            <head>, на App Router'е возникают hydration mismatch warnings
+            (Next.js рулит head'ом через metadata API; explicit <head> в
+            layout пересекается с этим). */}
         <link
           rel="preload"
           as="image"
           href="/img/hero-poster.jpg"
           fetchPriority="high"
         />
-      </head>
-      <body className={`${inter.variable} antialiased`}>
         {/* Preloader первым ребёнком body — рендерится в SSR с inline-
             стилями, виден immediate'но при доставке HTML. Гаснет когда
             window.load + 500ms прошло. */}

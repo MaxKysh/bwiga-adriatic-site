@@ -493,8 +493,14 @@ export default function Story() {
         <ul className="clippings" ref={clippingsRef}>
           {marqueeItems.map((m, i) => {
             const host = getHost(m.url);
+            // Локальная фавиконка из /public/media-favicons/<host>.png.
+            // Генерируется один раз: `node scripts/gen-favicons-media.mjs`.
+            // Раньше тянули с https://www.google.com/s2/favicons?domain=... —
+            // Google ставил 24 third-party cookie (NID, OSID, COMPASS, ...)
+            // что валило Best Practices score в Lighthouse на -30. Локальный
+            // PNG = same-origin, ноль кук.
             const fav = host
-              ? `https://www.google.com/s2/favicons?domain=${host}&sz=64`
+              ? `/media-favicons/${host}.png`
               : null;
             const desc = MEDIA_DESCRIPTORS[m.name] ?? "Coverage";
             return (
