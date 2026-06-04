@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
+
+// Isomorphic — на сервере useLayoutEffect выдаёт warning, потому что не
+// запускается в SSR. useEffect на сервере тоже не запускается, но не варнит.
+// На клиенте оба одинаково; нам важна синхронность с commit'ом ДО paint'а,
+// поэтому на клиенте берём useLayoutEffect.
+const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 // -----------------------------------------------------------------------------
 // Baseline scroll-triggered fade-up + heading word-reveal.
@@ -92,16 +98,14 @@ function wrapWordsInPlace(el: HTMLElement) {
 }
 
 export default function ScrollReveal() {
-  useEffect(() => {
+  // useLayoutEffect (на клиенте) — wrapping слов происходит ДО первого
+  // paint'а, поэтому браузер сразу видит обёрнутый DOM и нет двух разных
+  // состояний layout (без span'ов → со span'ами), что давало бы CLS shift.
+  // Раньше через useEffect wrapping происходил ПОСЛЕ первого paint'а, и
+  // Lighthouse ловил это как layout shift на hero-секции (CLS 0.446).
+  useIsoLayoutEffect(() => {
     if (typeof window === "undefined") return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    // На узких viewport'ах (≤767px) отключаем per-word word-split для
-    // секционных h2: Lighthouse считал 100+ span'ов с transition как
-    // «non-composited animations», что валит Performance score на mobile.
-    // Section fade-up на mobile остаётся (это один transform на секцию,
-    // дешёвый). Заголовки просто проявляются вместе с секцией.
-    const skipWordSplit = window.matchMedia("(max-width: 767px)").matches;
 
     // ---- Section fade-up + h2 word-reveal -------------------------------
     const sections = Array.from(
@@ -120,12 +124,15 @@ export default function ScrollReveal() {
       toReveal.push(s);
     });
 
-    if (!skipWordSplit) {
-      toReveal.forEach((section) => {
-        const headings = section.querySelectorAll<HTMLElement>("h2");
-        headings.forEach((h) => wrapWordsInPlace(h));
-      });
-    }
+    // Word-split применяется на всех viewport'ах — пользователь хочет
+    // эффект и на мобиле. CLS-проблема от rewrap'а решена переключением
+    // на useLayoutEffect (см. выше). Безкомпозиторные слои Lighthouse
+    // фиксирует, но их влияние на Performance score сейчас приоритет
+    // ниже visual polish'а.
+    toReveal.forEach((section) => {
+      const headings = section.querySelectorAll<HTMLElement>("h2");
+      headings.forEach((h) => wrapWordsInPlace(h));
+    });
 
     // Таймеры на unwrap — храним чтобы зачистить при unmount.
     const unwrapTimers: number[] = [];
@@ -155,10 +162,7 @@ export default function ScrollReveal() {
     // Тригер — body.intro-done (выставляется Preloader'ом после fade-out'а).
     // Здесь только оборачиваем слова в spans; саму анимацию запускает CSS
     // когда .intro-done доедет. После завершения reveal'а — unwrap.
-    // На mobile тоже скипаем (выше fold'а, прямо влияет на FCP/LCP).
-    const heroH1 = skipWordSplit
-      ? null
-      : document.querySelector<HTMLElement>("#hero h1");
+    const heroH1 = document.querySelector<HTMLElement>("#hero h1");
     let bodyClassObserver: MutationObserver | null = null;
     if (heroH1) {
       wrapWordsInPlace(heroH1);
