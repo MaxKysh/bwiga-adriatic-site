@@ -85,12 +85,50 @@ class StatuetteErrorBoundary extends Component<
 
 export default function StatuetteSafe() {
   const [decision, setDecision] = useState<Decision>("checking");
+  // Откладываем монтаж Statuette (а значит и dynamic import чанка с three.js
+  // + drei) пока браузер не отрендерил выше-fold контент: дожидаемся window
+  // load + короткой паузы. Это снимает three.js (~110 KiB gzip) с
+  // критического пути → быстрее FCP/LCP, меньше main-thread blocking на
+  // старте. Жёсткий fallback на 4s — если load долго не приходит, всё
+  // равно мaунтим.
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     setDecision(decide());
   }, []);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    let cancelled = false;
+    const armIdle = () => {
+      if (cancelled) return;
+      // requestIdleCallback не везде доступен (Safari ≤17). Fallback на setTimeout.
+      const ric = (
+        window as Window & {
+          requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+        }
+      ).requestIdleCallback;
+      if (ric) {
+        ric(() => !cancelled && setReady(true), { timeout: 1500 });
+      } else {
+        window.setTimeout(() => !cancelled && setReady(true), 300);
+      }
+    };
+    const fallback = window.setTimeout(() => !cancelled && setReady(true), 4000);
+    if (document.readyState === "complete") {
+      armIdle();
+    } else {
+      window.addEventListener("load", armIdle, { once: true });
+    }
+    return () => {
+      cancelled = true;
+      window.clearTimeout(fallback);
+      window.removeEventListener("load", armIdle);
+    };
+  }, []);
+
   if (decision === "checking" || decision === "skip") return null;
+  if (!ready) return <div className="statuette-skeleton" aria-hidden />;
 
   return (
     <StatuetteErrorBoundary>

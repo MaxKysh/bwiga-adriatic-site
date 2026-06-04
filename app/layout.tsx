@@ -104,6 +104,19 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
+      <head>
+        {/* Preload hero-poster — это LCP-кандидат на mobile (full-bleed bg
+            image на hero, ~309 KB). С preload + fetchPriority="high"
+            браузер начинает качать его в первой же группе запросов,
+            опережая non-critical assets. На desktop эффект слабее, но
+            тоже полезен. */}
+        <link
+          rel="preload"
+          as="image"
+          href="/img/hero-poster.jpg"
+          fetchPriority="high"
+        />
+      </head>
       <body className={`${inter.variable} antialiased`}>
         {/* Preloader первым ребёнком body — рендерится в SSR с inline-
             стилями, виден immediate'но при доставке HTML. Гаснет когда

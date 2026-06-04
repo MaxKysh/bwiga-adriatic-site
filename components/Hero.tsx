@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import content from "@/data/content.json";
 import YouTubeModal from "./YouTubeModal";
 import StatuetteSafe from "./StatuetteSafe";
@@ -39,32 +39,76 @@ function extractYouTubeId(url: string): string | null {
 
 export default function Hero() {
   const [openVideo, setOpenVideo] = useState<string | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const videos = content.about.videos;
   const adriaticId = extractYouTubeId(videos[0]?.youtube ?? "") ?? "kIbMj-zygCI";
   const belgradeId = extractYouTubeId(videos[1]?.youtube ?? "") ?? "lYH-xv6glKM";
 
+  // Отложенный старт hero-видео. Без autoPlay-атрибута браузер не качает
+  // источники до прямого .play(). Стартуем только после window.load + idle
+  // — к этому моменту FCP/LCP уже отыграли. Poster (CSS background) виден
+  // сразу, юзер не замечает «дыры».
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const v = videoRef.current;
+    if (!v) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let cancelled = false;
+    const start = () => {
+      if (cancelled) return;
+      // .play() возвращает promise; на iOS могут быть отказы (autoplay
+      // policy), но muted+playsInline в подавляющем большинстве случаев ок.
+      const p = v.play();
+      if (p && typeof p.catch === "function") p.catch(() => {});
+    };
+    const armIdle = () => {
+      if (cancelled) return;
+      const ric = (
+        window as Window & {
+          requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+        }
+      ).requestIdleCallback;
+      if (ric) ric(start, { timeout: 1500 });
+      else window.setTimeout(start, 300);
+    };
+    const fallback = window.setTimeout(start, 4000);
+    if (document.readyState === "complete") armIdle();
+    else window.addEventListener("load", armIdle, { once: true });
+    return () => {
+      cancelled = true;
+      window.clearTimeout(fallback);
+      window.removeEventListener("load", armIdle);
+    };
+  }, []);
+
   return (
     <section className="hero" id="hero" aria-label="Hero">
       <div className="hero-bg-poster" aria-hidden />
       <video
+        ref={videoRef}
         className="hero-bg"
-        autoPlay
         muted
         loop
         playsInline
-        /* preload="metadata" вместо "auto" — браузер не качает 3-7 MB видео
-           до того как страница отрендерилась. autoPlay всё равно запустит
-           загрузку как только сможет, но LCP/FCP уже отыграют. Poster
-           показывается как фон сразу, юзер не видит «дыру». */
-        preload="metadata"
+        /* Без autoPlay: иначе браузер начнёт качать ~3-7 MB видео сразу при
+           парсинге HTML и заблокирует FCP/LCP. .play() вызываем сами после
+           window.load + idle (см. useEffect выше). preload="none" — даже
+           метадату не пытаемся загрузить раньше времени. */
+        preload="none"
         poster="/img/hero-poster.jpg"
         aria-hidden
       >
-        <source media="(min-width: 1024px)" src="/video/hero-bg-loop-1080.webm" type="video/webm" />
-        <source media="(min-width: 1024px)" src="/video/hero-bg-loop-1080.mp4" type="video/mp4" />
-        <source media="(max-width: 1023px)" src="/video/hero-bg-loop-720.webm" type="video/webm" />
-        <source media="(max-width: 1023px)" src="/video/hero-bg-loop-720.mp4" type="video/mp4" />
+        {/* Три тира по разрешению. Browser выбирает первый source где
+            media-query истинно — поэтому 1080p stand at top. */}
+        <source media="(min-width: 1280px)" src="/video/hero-bg-loop-1080.webm" type="video/webm" />
+        <source media="(min-width: 1280px)" src="/video/hero-bg-loop-1080.mp4" type="video/mp4" />
+        <source media="(min-width: 640px)" src="/video/hero-bg-loop-720.webm" type="video/webm" />
+        <source media="(min-width: 640px)" src="/video/hero-bg-loop-720.mp4" type="video/mp4" />
+        {/* Mobile (< 640px) — 480p mp4 (1.6 MB vs 3.6 MB 720p). Видео
+            decorative, фильтруется через brightness(0.65) — разрешение
+            практически не читается. */}
+        <source src="/video/hero-bg-loop-480.mp4" type="video/mp4" />
       </video>
 
       <div className="hero-grid">
