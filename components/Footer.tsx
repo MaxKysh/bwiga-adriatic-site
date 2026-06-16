@@ -1,6 +1,8 @@
 "use client";
 
 import content from "@/data/content.json";
+import { mailto } from "@/lib/mailto";
+import { PARTNER_BODY, PARTNER_SUBJECT } from "@/lib/mail-templates";
 
 // -----------------------------------------------------------------------------
 // Editorial chrome + the short bits that aren't in content.json (column
@@ -12,14 +14,17 @@ const FOOTER_TAG = "Contacts";
 const BRAND_TAGLINE = "Web3 & iGaming Awards. Adriatic Edition. September 30, 2026.";
 const BRAND_COPY = "© 2026 Lead Volume";
 
-const QUICK_LINKS = [
-  { label: "Apply nomination", href: "#awards" },
-  { label: "Become a partner", href: "#contacts" },
-  { label: "Speak at BWiGA", href: "#people" },
-];
-
 export default function Footer() {
   const { email, telegram_handle, socials } = content.contacts;
+  // "Become a partner" должен открывать mailto (как одноимённая кнопка в
+  // секции Partners) — раньше вёл на #contacts, на десктопе это означает
+  // прыжок в ту же секцию, где сама ссылка → визуально клик «не работает».
+  // mailto хотя бы открывает почтовый клиент с предзаполненной формой.
+  const QUICK_LINKS = [
+    { label: "Apply nomination", href: "#awards" },
+    { label: "Become a partner", href: mailto(email, PARTNER_SUBJECT, PARTNER_BODY) },
+    { label: "Speak at BWiGA", href: "#people" },
+  ];
 
   return (
     <section className="footer" id="contacts" aria-label="Contacts and footer">

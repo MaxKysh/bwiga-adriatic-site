@@ -141,13 +141,14 @@ export default function StatsPanel() {
           color: rgba(255, 255, 255, 0.78);
         }
 
-        /* 4-cell grid. White hairline dividers between cells on desktop,
-           horizontal rules on mobile. */
+        /* 4-cell grid. minmax(0, 1fr) — без auto-min cell не пытается
+           расширяться под широкое содержимое (100+ в 4-й колонке), все
+           ячейки гарантированно равной ширины. */
         .grid {
           position: relative;
           z-index: 1;
           display: grid;
-          grid-template-columns: repeat(4, 1fr);
+          grid-template-columns: repeat(4, minmax(0, 1fr));
         }
         .c {
           position: relative;
@@ -157,7 +158,17 @@ export default function StatsPanel() {
           gap: 14px;
         }
 
+        /* inline-flex + baseline + nowrap — раньше Counter (inline-block,
+           vertical-align: baseline) и sup (vertical-align: top) жили на одной
+           inline-строке, и в узких ячейках sup переносился на новую строку
+           → весь блок .num становился двустрочным, толкая .lbl и .meta вниз
+           к концу ячейки. С inline-flex дети сидят на одной flex-линии,
+           nowrap страхует от внутреннего wrap'а. */
         .num {
+          display: inline-flex;
+          align-items: baseline;
+          gap: 4px;
+          white-space: nowrap;
           font-family: var(--font-inter);
           font-weight: 300;
           /* Monumental numeral — matches the design's fs-display-2 clamp. */
@@ -172,9 +183,12 @@ export default function StatsPanel() {
           font-size: 0.36em;
           font-weight: 300;
           color: rgba(255, 255, 255, 0.78);
-          vertical-align: top;
           line-height: 1;
-          margin-left: 4px;
+          /* В inline-flex baseline-row sup опускается на baseline вместе с
+             числом. align-self: flex-start поднимает его к верху строки —
+             визуально как настоящий superscript. */
+          align-self: flex-start;
+          margin-top: 0.18em;
         }
         .lbl {
           font-family: var(--font-inter);

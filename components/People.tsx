@@ -34,13 +34,21 @@ type Card = {
   featured: boolean;
 };
 
+// Убираем единственную trailing-точку: разные JSON-записи приходят с/без
+// неё (одни пишут «Founder of X.» с точкой, другие «CEO at Y» без), QA это
+// замечает как несогласованный visual. Internal points (как в «X. Y.»)
+// сохраняем — режем только финальную.
+function normalizeTitle(t: string): string {
+  return t.replace(/\.\s*$/, "");
+}
+
 function buildCards(): Card[] {
   const jury: Card[] = content.speakers.jury.map((p) => ({
     slug: p.slug,
     name: p.name,
     role: "jury",
     roleLabel: p.slug === FEATURED_SLUG ? FEATURED_LABEL : "Jury",
-    title: p.title,
+    title: normalizeTitle(p.title),
     photo: `/speakers/jury/${p.slug}.webp`,
     featured: p.slug === FEATURED_SLUG,
   }));
@@ -49,7 +57,7 @@ function buildCards(): Card[] {
     name: p.name,
     role: "speaker",
     roleLabel: "Speaker",
-    title: p.title,
+    title: normalizeTitle(p.title),
     photo: `/speakers/speakers/${p.slug}.webp`,
     featured: false,
   }));
@@ -943,12 +951,16 @@ export default function People() {
           margin: 0;
           margin-top: auto;
           text-wrap: pretty;
-          /* Hard cap at two lines — ellipsis if content overflows. Keeps
-             card heights aligned regardless of how long a JSON title is. */
+          /* Hard cap at THREE lines — ellipsis если контент длинее. Раньше
+             был 2-line cap, длинные титулы вроде «Head of International
+             Cooperation and Development Department at Securities Commission
+             of Serbia» обрезались в нечитаемое «Head of International
+             Cooperation and…». 3 строки покрывают ~80 символов — этого хватает
+             всем текущим карточкам. Card height чуть выше, grid выравнивается. */
           display: -webkit-box;
           -webkit-box-orient: vertical;
-          -webkit-line-clamp: 2;
-          line-clamp: 2;
+          -webkit-line-clamp: 3;
+          line-clamp: 3;
           overflow: hidden;
           text-overflow: ellipsis;
         }

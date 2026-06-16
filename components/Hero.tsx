@@ -99,16 +99,17 @@ export default function Hero() {
         poster="/img/hero-poster.jpg"
         aria-hidden
       >
-        {/* Три тира по разрешению. Browser выбирает первый source где
-            media-query истинно — поэтому 1080p stand at top. */}
+        {/* Два тира по разрешению. 480p пытался экономить мобайл-трафик,
+            но на high-DPR дисплеях (iPhone 15: 3x pixel density → 1170×2532
+            физических пикселей) 854×480 видео выглядит мылью даже сквозь
+            brightness(0.65). QA отметил «плохое качество». 720p везде ниже
+            десктопа — payload 2.4-3.6 MB, но видео грузится lazy после
+            window.load + idle (см. useEffect выше), это уже не на
+            критическом пути LCP. */}
         <source media="(min-width: 1280px)" src="/video/hero-bg-loop-1080.webm" type="video/webm" />
         <source media="(min-width: 1280px)" src="/video/hero-bg-loop-1080.mp4" type="video/mp4" />
-        <source media="(min-width: 640px)" src="/video/hero-bg-loop-720.webm" type="video/webm" />
-        <source media="(min-width: 640px)" src="/video/hero-bg-loop-720.mp4" type="video/mp4" />
-        {/* Mobile (< 640px) — 480p mp4 (1.6 MB vs 3.6 MB 720p). Видео
-            decorative, фильтруется через brightness(0.65) — разрешение
-            практически не читается. */}
-        <source src="/video/hero-bg-loop-480.mp4" type="video/mp4" />
+        <source src="/video/hero-bg-loop-720.webm" type="video/webm" />
+        <source src="/video/hero-bg-loop-720.mp4" type="video/mp4" />
       </video>
 
       <div className="hero-grid">

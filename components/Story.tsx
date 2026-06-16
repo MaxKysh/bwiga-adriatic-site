@@ -658,8 +658,14 @@ export default function Story() {
           display: flex;
           flex-direction: column;
           gap: 8px;
-          padding: 4px clamp(24px, 3vw, 44px) 4px 0;
+          /* Симметричный padding слева+справа от текста до divider'а — раньше
+             был только padding-right, и в каждой следующей ячейке текст
+             прилипал к разделителю слева (QA отметил «вплотную к тексту»). */
+          padding: 4px clamp(24px, 3vw, 44px);
           border-right: 1px solid var(--hairline);
+        }
+        .inline-stats li:first-child {
+          padding-left: 0;
         }
         .inline-stats li:last-child {
           border-right: 0;
@@ -1099,10 +1105,14 @@ export default function Story() {
         /* ---------- Responsive ---------- */
         @media (max-width: 1100px) {
           /* 3-col grid → items wrap 3 + 2. Right-edge cells (3rd and last)
-             drop the border-right so wraps don't show a stray vertical line. */
+             drop the border-right so wraps don't show a stray vertical line.
+             Row-start cells (1, 4) drop padding-left. */
           .inline-stats {
             grid-template-columns: repeat(3, minmax(0, 1fr));
             row-gap: clamp(20px, 2vw, 28px);
+          }
+          .inline-stats li:nth-child(3n + 1) {
+            padding-left: 0;
           }
           .inline-stats li:nth-child(3n) {
             border-right: 0;
@@ -1138,13 +1148,19 @@ export default function Story() {
           }
           /* 2-col grid → items wrap 2 + 2 + 1. Right-edge cells: 2nd, 4th,
              5th (last-child). The grid declaration override re-enables
-             border-right on the 3rd (it's no longer at the right edge). */
+             border-right on the 3rd (it's no longer at the right edge).
+             Row-starts (1, 3, 5) drop padding-left, остальные получают —
+             симметрично с padding-right'ом. */
           .inline-stats {
             grid-template-columns: repeat(2, minmax(0, 1fr));
           }
           .inline-stats li {
             border-right: 1px solid var(--hairline);
             padding-right: clamp(20px, 4vw, 32px);
+            padding-left: clamp(20px, 4vw, 32px);
+          }
+          .inline-stats li:nth-child(2n + 1) {
+            padding-left: 0;
           }
           .inline-stats li:nth-child(2n),
           .inline-stats li:last-child {

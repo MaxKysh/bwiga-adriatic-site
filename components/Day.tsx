@@ -11,7 +11,7 @@ const DAY_MARK = "05";
 const DAY_EYEBROW = "Schedule · Registration";
 const DAY_TAG = "The Day";
 const DAY_DATE = "September 30, 2026";
-const DAY_META = "Conference · Awards · After Party · 14:00 — 23:00";
+const DAY_META = "VIP Boat · Conference · Awards · After Party · 10:00 — 23:00";
 
 const STANDARD_TIER = "Standard";
 // Old price (struck-through) + promo subline. July 1st выделен <strong>

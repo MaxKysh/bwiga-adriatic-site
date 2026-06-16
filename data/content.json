@@ -378,6 +378,14 @@
       {
         "slug": "best-merch",
         "name": "Best merch of the year"
+      },
+      {
+        "slug": "igaming-lady",
+        "name": "iGaming Lady of the year"
+      },
+      {
+        "slug": "best-game-studio",
+        "name": "Best Game Studio"
       }
     ]
   },
@@ -443,6 +451,12 @@
         "name": "Guy Yanpolskiy",
         "photo": "assets/speakers/jury/guy-yanpolskiy.webp",
         "title": "Forbes Business Council. Co-founder of WoW Summit."
+      },
+      {
+        "slug": "valere-zimare",
+        "name": "Valere Zimare",
+        "photo": "assets/speakers/jury/valere-zimare.webp",
+        "title": "AI Strategy & Decision Systems. Co-Founder of GYGlobal Holding & GYG Agency."
       }
     ],
     "speakers": [
@@ -470,7 +484,7 @@
         "slug": "anina-milanovic",
         "name": "Anina Milanovic",
         "photo": "assets/speakers/speakers/anina-milanovic.webp",
-        "title": "Head of International Cooperation and Development Department at Securities Commission of Serbia"
+        "title": "Head of Int'l Cooperation at Securities Commission of Serbia"
       },
       {
         "slug": "andrew-builov",
@@ -520,6 +534,12 @@
         "name": "Ivan Joličić",
         "photo": "assets/speakers/speakers/ivan-jolicic.webp",
         "title": "Co-Founder & CTO at Perper.net. CEO & Founder of Oraicle.me."
+      },
+      {
+        "slug": "mike-danshin",
+        "name": "Mike Danshin",
+        "photo": "assets/speakers/speakers/mike-danshin.webp",
+        "title": "CMO at 1w Crypto"
       }
     ],
     "program_status_label": "Program under development",
@@ -536,9 +556,17 @@
   },
   "schedule": {
     "date_display": "September 30th",
-    "time_range": "14:00 - 23:00",
+    "time_range": "10:00 - 23:00",
     "status_label": "Program under development!",
     "items": [
+      {
+        "time": "10:00 - 12:00",
+        "title": "VIP Network Boat"
+      },
+      {
+        "time": "12:00 - 14:00",
+        "title": "Lunch Break"
+      },
       {
         "time": "14:00 - 18:00",
         "title": "Panel Discussions and Speakers' keynotes"
@@ -901,6 +929,13 @@
         "logo_source": "https://playnewswire.com/wp-content/uploads/2025/07/Final_Logo_PlayNewsWireMF-341x70.png",
         "logo_local": "assets/media-partners/playnewswire.png",
         "url": "https://playnewswire.com/"
+      },
+      {
+        "name": "Lucklandia",
+        "slug": "lucklandia",
+        "logo_source": "https://lucklandia.com/assets/images/header/header_logo-OPhQVTY.png",
+        "logo_local": "assets/media-partners/lucklandia.png",
+        "url": "https://lucklandia.com/"
       }
     ],
     "note_removed": "'Gambling Talk' appears in both sponsor and media partner lists on adriaticawards.com. Listed only once, under sponsors, to avoid duplicate display."
