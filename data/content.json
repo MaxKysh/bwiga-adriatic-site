@@ -421,6 +421,12 @@
         "title": "Marketer, PhD in sociology. Organizer of BWiGA."
       },
       {
+        "slug": "samuela-davidova",
+        "name": "Samuela Davidova",
+        "photo": "assets/speakers/jury/samuela-davidova.webp",
+        "title": "Liberland representative"
+      },
+      {
         "slug": "andrey-insarov",
         "name": "Andrey Insarov",
         "photo": "assets/speakers/jury/andrey-insarov.webp",
@@ -460,6 +466,12 @@
       }
     ],
     "speakers": [
+      {
+        "slug": "marina-rioni",
+        "name": "Marina Rioni",
+        "photo": "assets/speakers/speakers/marina-rioni.webp",
+        "title": "Founder of Global Crypto Club event agency"
+      },
       {
         "slug": "tobias-jack-lewis",
         "name": "Tobias Jack Lewis",

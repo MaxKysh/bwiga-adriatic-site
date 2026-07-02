@@ -22,6 +22,15 @@ const APPLY_LABEL = "Apply to speak";
 const FEATURED_SLUG = "alexey-nasybullin";
 const FEATURED_LABEL = "Jury Chair";
 
+// Special-role slugs: overrides the default "Jury"/"Speaker" badge и вешает
+// data-special на карточку. CSS расцвечивает badge и добавляет тонкую
+// акцентную обводку — карточка читается как «не просто участник, а хост»,
+// но не так броско как Jury Chair.
+const SPECIAL_ROLES: Record<string, { label: string; special: string }> = {
+  "samuela-davidova": { label: "Conference Presenter", special: "presenter" },
+  "marina-rioni": { label: "Moderator", special: "moderator" },
+};
+
 type Filter = "all" | "jury" | "speaker";
 
 type Card = {
@@ -32,6 +41,7 @@ type Card = {
   title: string;
   photo: string;
   featured: boolean;
+  special: string | null;
 };
 
 // Убираем единственную trailing-точку: разные JSON-записи приходят с/без
@@ -43,24 +53,32 @@ function normalizeTitle(t: string): string {
 }
 
 function buildCards(): Card[] {
-  const jury: Card[] = content.speakers.jury.map((p) => ({
-    slug: p.slug,
-    name: p.name,
-    role: "jury",
-    roleLabel: p.slug === FEATURED_SLUG ? FEATURED_LABEL : "Jury",
-    title: normalizeTitle(p.title),
-    photo: `/speakers/jury/${p.slug}.webp`,
-    featured: p.slug === FEATURED_SLUG,
-  }));
-  const speakers: Card[] = content.speakers.speakers.map((p) => ({
-    slug: p.slug,
-    name: p.name,
-    role: "speaker",
-    roleLabel: "Speaker",
-    title: normalizeTitle(p.title),
-    photo: `/speakers/speakers/${p.slug}.webp`,
-    featured: false,
-  }));
+  const jury: Card[] = content.speakers.jury.map((p) => {
+    const s = SPECIAL_ROLES[p.slug];
+    return {
+      slug: p.slug,
+      name: p.name,
+      role: "jury" as const,
+      roleLabel: s?.label ?? (p.slug === FEATURED_SLUG ? FEATURED_LABEL : "Jury"),
+      title: normalizeTitle(p.title),
+      photo: `/speakers/jury/${p.slug}.webp`,
+      featured: p.slug === FEATURED_SLUG,
+      special: s?.special ?? null,
+    };
+  });
+  const speakers: Card[] = content.speakers.speakers.map((p) => {
+    const s = SPECIAL_ROLES[p.slug];
+    return {
+      slug: p.slug,
+      name: p.name,
+      role: "speaker" as const,
+      roleLabel: s?.label ?? "Speaker",
+      title: normalizeTitle(p.title),
+      photo: `/speakers/speakers/${p.slug}.webp`,
+      featured: false,
+      special: s?.special ?? null,
+    };
+  });
   return [...jury, ...speakers];
 }
 
@@ -414,6 +432,7 @@ export default function People() {
                   key={c.slug}
                   className={cls}
                   data-role={c.role}
+                  data-special={c.special ?? undefined}
                 >
                   <div className="pcard-photo">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -919,6 +938,57 @@ export default function People() {
         }
         .pcard:hover .pcard-role::before {
           box-shadow: 0 0 10px rgba(79, 161, 220, 1);
+        }
+
+        /* Special-role badges (host / presenter / moderator).
+           Идея: сохранить общий silhouette pcard-role, но перекрасить рамку и
+           точку в яркий акцент. Читается как «этот участник — хост, не
+           обычный участник», без резкой ломки визуальной иерархии страницы.
+
+           Conference Presenter (Samuela, jury): фирменный синий (BWiGA
+           blue) — насыщенный fill + светлая обводка вместо мягкого белого
+           текста. Против золотого фона jury-карточки brand blue читается
+           как «наш акцент», согласуясь с page-wide identity.
+
+           Moderator (Marina, speaker): золотой акцент — контраст с синим
+           тоном speaker-карточек. Заимствуем gold только на badge, тело
+           карточки остаётся синим — не ломает page-wide gold rule (золото
+           резервировано под Sep 30 timeline + Awards Ceremony), просто
+           лёгкий акцент. */
+        .pcard[data-special="presenter"] .pcard-role {
+          color: #fff;
+          border-color: rgba(79, 161, 220, 0.65);
+          background: rgba(48, 131, 198, 0.5);
+        }
+        .pcard[data-special="presenter"] .pcard-role::before {
+          background: var(--bwiga-blue-bright);
+          box-shadow: 0 0 10px rgba(79, 161, 220, 1);
+        }
+        .pcard[data-special="presenter"]:hover .pcard-role {
+          color: #fff;
+          border-color: var(--bwiga-blue-bright);
+          background: rgba(48, 131, 198, 0.65);
+        }
+        .pcard[data-special="presenter"]:hover .pcard-role::before {
+          box-shadow: 0 0 14px rgba(79, 161, 220, 1);
+        }
+
+        .pcard[data-special="moderator"] .pcard-role {
+          color: rgba(245, 220, 165, 0.9);
+          border-color: rgba(217, 178, 106, 0.55);
+          background: rgba(217, 178, 106, 0.14);
+        }
+        .pcard[data-special="moderator"] .pcard-role::before {
+          background: var(--bwiga-gold-bright);
+          box-shadow: 0 0 8px rgba(232, 201, 136, 0.9);
+        }
+        .pcard[data-special="moderator"]:hover .pcard-role {
+          color: #fff;
+          border-color: rgba(232, 201, 136, 0.85);
+          background: rgba(217, 178, 106, 0.24);
+        }
+        .pcard[data-special="moderator"]:hover .pcard-role::before {
+          box-shadow: 0 0 12px rgba(232, 201, 136, 1);
         }
 
         /* Body — fills the rest of the card so margin-top:auto on the title
