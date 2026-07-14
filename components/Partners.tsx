@@ -69,9 +69,27 @@ const INVERT_LOGOS = new Set<string>([
   "playnewswire",
 ]);
 
-type Tile = { name: string; slug: string; logo: string; url?: string };
+type Tile = {
+  name: string;
+  slug: string;
+  logo: string;
+  url?: string;
+  tier?: string;
+};
 
-function buildTiles(list: typeof content.partners.list): Tile[] {
+// Партнёрские записи в content.json могут нести опциональное поле tier
+// («golden» для Golden Sponsor). typeof выведет узкий тип без этого поля
+// из литерала JSON, поэтому extract'им его вручную через приведение к
+// расширенному типу.
+type PartnerRecord = {
+  name: string;
+  slug: string;
+  logo_local: string;
+  url?: string;
+  tier?: string;
+};
+
+function buildTiles(list: readonly PartnerRecord[]): Tile[] {
   return list
     .filter((p) => !KNOWN_MISSING_LOGOS.has(p.slug))
     .map((p) => ({
@@ -79,12 +97,13 @@ function buildTiles(list: typeof content.partners.list): Tile[] {
       slug: p.slug,
       logo: toPublic(p.logo_local),
       url: p.url,
+      tier: p.tier,
     }));
 }
 
 export default function Partners() {
-  const partners = buildTiles(content.partners.list);
-  const media = buildTiles(content.media_partners.list);
+  const partners = buildTiles(content.partners.list as readonly PartnerRecord[]);
+  const media = buildTiles(content.media_partners.list as readonly PartnerRecord[]);
 
   return (
     <section className="partners" id="partners" aria-label="Partners and media partners">
@@ -120,11 +139,23 @@ export default function Partners() {
                 <a
                   className="partners-tile"
                   data-invert={INVERT_LOGOS.has(tile.slug) ? "true" : undefined}
+                  data-tier={tile.tier || undefined}
                   href={tile.url ?? "#"}
                   target={tile.url ? "_blank" : undefined}
                   rel={tile.url ? "noopener noreferrer" : undefined}
-                  aria-label={tile.url ? `${tile.name} — opens in a new tab` : tile.name}
+                  aria-label={
+                    tile.tier === "golden"
+                      ? `Golden Sponsor: ${tile.name}${tile.url ? " — opens in a new tab" : ""}`
+                      : tile.url
+                        ? `${tile.name} — opens in a new tab`
+                        : tile.name
+                  }
                 >
+                  {tile.tier === "golden" && (
+                    <span className="tier-chip" aria-hidden>
+                      Golden Sponsor
+                    </span>
+                  )}
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     className="logo"
@@ -413,6 +444,80 @@ export default function Partners() {
           /* Hover-IN: быстрая 300ms (как было). */
           transition: filter 300ms var(--ease-soft),
             transform 300ms var(--ease-soft);
+        }
+
+        /* -------- Golden Sponsor tier --------
+           Спонсор верхнего тира: тайл в тёмном тёплом фоне (не чёрный, не
+           белый — «champagne midnight»), золотая hairline-обводка + постоянный
+           мягкий gold glow, чтобы карточка «светилась» даже без hover'а.
+           Плашка «GOLDEN SPONSOR» пришпилена вверху; на hover glow усиливается,
+           плашка чуть увеличивается, тайл поднимается сильнее обычного.
+           Название tier'а — сюда же добавляй новые (silver, platinum) когда
+           понадобятся. */
+        .partners-tile[data-tier="golden"] {
+          background: radial-gradient(
+              ellipse 90% 90% at 50% 40%,
+              rgba(217, 178, 106, 0.18) 0%,
+              rgba(24, 22, 16, 0) 65%
+            ),
+            linear-gradient(180deg, #2a2318 0%, #1a1610 100%);
+          border: 1px solid rgba(217, 178, 106, 0.55);
+          box-shadow: 0 0 0 1px rgba(217, 178, 106, 0.15),
+            0 0 22px rgba(217, 178, 106, 0.25),
+            0 6px 16px rgba(0, 0, 0, 0.5);
+          padding-top: clamp(28px, 3vw, 40px);
+        }
+        /* Плашка «GOLDEN SPONSOR» — маленький чип по центру сверху. */
+        .partners-tile[data-tier="golden"] :global(.tier-chip) {
+          position: absolute;
+          top: 10px;
+          left: 50%;
+          transform: translateX(-50%);
+          z-index: 2;
+          font-family: var(--font-inter);
+          font-weight: 700;
+          font-size: 9.5px;
+          letter-spacing: 0.22em;
+          text-transform: uppercase;
+          color: var(--bwiga-gold-bright);
+          padding: 4px 10px;
+          border: 1px solid rgba(217, 178, 106, 0.55);
+          border-radius: 999px;
+          background: rgba(217, 178, 106, 0.12);
+          white-space: nowrap;
+          transition: color 300ms var(--ease-soft),
+            border-color 300ms var(--ease-soft),
+            background 300ms var(--ease-soft),
+            transform 300ms var(--ease-soft),
+            box-shadow 300ms var(--ease-soft);
+        }
+        /* На hover — золото усиливается + плашка чуть подсвечивается,
+           карточка поднимается заметнее обычной. Белую заливку (::after)
+           у golden-тайла НЕ применяем: логотип и так на тёмно-тёплом фоне
+           виден без grayscale-инверсии. */
+        .partners-tile[data-tier="golden"]:hover {
+          transform: translateY(-4px);
+          border-color: var(--bwiga-gold-bright);
+          box-shadow: 0 0 0 1px rgba(217, 178, 106, 0.35),
+            0 0 34px rgba(232, 201, 136, 0.5),
+            0 14px 30px rgba(0, 0, 0, 0.55);
+        }
+        .partners-tile[data-tier="golden"]:hover :global(.tier-chip) {
+          color: #fff;
+          border-color: var(--bwiga-gold-bright);
+          background: rgba(217, 178, 106, 0.35);
+          transform: translateX(-50%) translateY(-1px);
+          box-shadow: 0 0 12px rgba(232, 201, 136, 0.7);
+        }
+        /* Отключаем белую заливку hover'а — golden-тайл сам себе стиль. */
+        .partners-tile[data-tier="golden"]::after {
+          display: none;
+        }
+        /* Логотип golden-спонсора рендерим цветным изначально (grayscale
+           убираем) — визуально акцентная карточка не должна выглядеть как
+           «затушёванная». */
+        .partners-tile[data-tier="golden"] :global(img.logo) {
+          filter: none;
         }
 
         /* -------- CTA -------- */

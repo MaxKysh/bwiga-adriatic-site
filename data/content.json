@@ -631,6 +631,13 @@
     ],
     "list": [
       {
+        "name": "AdsCard",
+        "slug": "adscard",
+        "logo_local": "assets/partners/adscard.svg",
+        "url": "https://adscard.net",
+        "tier": "golden"
+      },
+      {
         "name": "Bitget",
         "slug": "bitget",
         "logo_source": "https://adriaticawards.com/dist/img/bitget.png",
