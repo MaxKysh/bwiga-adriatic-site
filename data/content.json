@@ -552,6 +552,12 @@
         "name": "Mike Danshin",
         "photo": "assets/speakers/speakers/mike-danshin.webp",
         "title": "CMO at 1w Crypto"
+      },
+      {
+        "slug": "grigory-chikishev",
+        "name": "Grigory Chikishev",
+        "photo": "assets/speakers/speakers/grigory-chikishev.webp",
+        "title": "Team Lead and Quantitative Trader at Quantum Brains"
       }
     ],
     "program_status_label": "Program under development",
