@@ -52,7 +52,6 @@ const INVERT_LOGOS = new Set<string>([
   "mmpro-group",
   "gordon",
   "kripto-dnevnik",
-  "100hp-game",
   // Media partners
   "coin-gabbar",
   "bitcoinist",
@@ -67,6 +66,17 @@ const INVERT_LOGOS = new Set<string>([
   "vizi",
   "chainwire",
   "playnewswire",
+]);
+
+// Логотипы, которые ПРИРОДНО белые на прозрачном фоне (например 100HP —
+// белый wordmark + красный акцент). На тёмной плитке они хорошо видны как
+// есть; проблема начинается на hover, когда через ::after заливается белый
+// фон — белый логотип на белом фоне исчезает. Для них инвертируем ТОЛЬКО
+// на hover: белый становится чёрным на белой плитке, читается корректно.
+// Красный акцент при invert(1) становится cyan-ish — приемлемо, всё ещё
+// узнаваемо как акцент.
+const INVERT_HOVER_LOGOS = new Set<string>([
+  "100hp-game",
 ]);
 
 type Tile = {
@@ -139,6 +149,7 @@ export default function Partners() {
                 <a
                   className="partners-tile"
                   data-invert={INVERT_LOGOS.has(tile.slug) ? "true" : undefined}
+                  data-invert-hover={INVERT_HOVER_LOGOS.has(tile.slug) ? "true" : undefined}
                   data-tier={tile.tier || undefined}
                   href={tile.url ?? "#"}
                   target={tile.url ? "_blank" : undefined}
@@ -182,6 +193,7 @@ export default function Partners() {
                 <a
                   className="partners-tile"
                   data-invert={INVERT_LOGOS.has(tile.slug) ? "true" : undefined}
+                  data-invert-hover={INVERT_HOVER_LOGOS.has(tile.slug) ? "true" : undefined}
                   href={tile.url ?? "#"}
                   target={tile.url ? "_blank" : undefined}
                   rel={tile.url ? "noopener noreferrer" : undefined}
@@ -438,12 +450,21 @@ export default function Partners() {
         .partners-tile[data-invert] :global(img.logo) {
           filter: grayscale(1) invert(1) contrast(1.05);
         }
+        /* Naturally-white artwork (например 100HP) — native на dark-tile
+           отлично видно; на hover ::after заливает белый фон, поэтому
+           инвертируем логотип чтобы он стал тёмным на белом. */
+        .partners-tile[data-invert-hover] :global(img.logo) {
+          filter: none;
+        }
         .partners-tile:hover :global(img.logo) {
           filter: none;
           transform: scale(1.04);
           /* Hover-IN: быстрая 300ms (как было). */
           transition: filter 300ms var(--ease-soft),
             transform 300ms var(--ease-soft);
+        }
+        .partners-tile[data-invert-hover]:hover :global(img.logo) {
+          filter: invert(1);
         }
 
         /* -------- Golden Sponsor tier --------

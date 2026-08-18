@@ -1,88 +1,27 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 53 31" width="424" height="248" shape-rendering="crispEdges">
-  <g fill="#E53935">
-    <rect x="44" y="8" width="1" height="1"/>
-    <rect x="44" y="7" width="9" height="1"/>
-    <rect x="44" y="9" width="9" height="1"/>
-    <rect x="45" y="6" width="2" height="1"/>
-    <rect x="45" y="10" width="7" height="1"/>
-    <rect x="46" y="11" width="5" height="1"/>
-    <rect x="46" y="8" width="7" height="1"/>
-    <rect x="47" y="12" width="3" height="1"/>
-    <rect x="48" y="13" width="1" height="1"/>
-    <rect x="49" y="6" width="2" height="1"/>
-  </g>
-  <g fill="black">
-    <rect x="0" y="3" width="3" height="15"/>
-    <rect x="0" y="0" width="43" height="3"/>
-    <rect x="0" y="18" width="43" height="3"/>
-    <rect x="8" y="8" width="2" height="1"/>
-    <rect x="8" y="13" width="3" height="1"/>
-    <rect x="9" y="7" width="1" height="1"/>
-    <rect x="9" y="9" width="1" height="4"/>
-    <rect x="10" y="25" width="1" height="5"/>
-    <rect x="11" y="30" width="3" height="1"/>
-    <rect x="11" y="24" width="4" height="1"/>
-    <rect x="12" y="27" width="3" height="1"/>
-    <rect x="13" y="8" width="1" height="3"/>
-    <rect x="13" y="12" width="1" height="1"/>
-    <rect x="13" y="11" width="2" height="1"/>
-    <rect x="14" y="28" width="1" height="2"/>
-    <rect x="14" y="7" width="3" height="1"/>
-    <rect x="14" y="13" width="3" height="1"/>
-    <rect x="15" y="10" width="1" height="1"/>
-    <rect x="16" y="25" width="1" height="2"/>
-    <rect x="16" y="28" width="1" height="3"/>
-    <rect x="16" y="9" width="2" height="1"/>
-    <rect x="16" y="27" width="5" height="1"/>
-    <rect x="17" y="8" width="1" height="1"/>
-    <rect x="17" y="10" width="1" height="3"/>
-    <rect x="17" y="24" width="3" height="1"/>
-    <rect x="19" y="8" width="1" height="3"/>
-    <rect x="19" y="12" width="1" height="1"/>
-    <rect x="19" y="11" width="2" height="1"/>
-    <rect x="20" y="25" width="1" height="2"/>
-    <rect x="20" y="28" width="1" height="3"/>
-    <rect x="20" y="7" width="3" height="1"/>
-    <rect x="20" y="13" width="3" height="1"/>
-    <rect x="21" y="10" width="1" height="1"/>
-    <rect x="22" y="24" width="1" height="1"/>
-    <rect x="22" y="26" width="1" height="5"/>
-    <rect x="22" y="9" width="2" height="1"/>
-    <rect x="22" y="25" width="2" height="1"/>
-    <rect x="23" y="8" width="1" height="1"/>
-    <rect x="23" y="10" width="1" height="3"/>
-    <rect x="24" y="26" width="1" height="2"/>
-    <rect x="25" y="7" width="1" height="3"/>
-    <rect x="25" y="11" width="1" height="3"/>
-    <rect x="25" y="25" width="2" height="1"/>
-    <rect x="25" y="10" width="5" height="1"/>
-    <rect x="26" y="24" width="1" height="1"/>
-    <rect x="26" y="26" width="1" height="5"/>
-    <rect x="28" y="24" width="3" height="1"/>
-    <rect x="28" y="30" width="3" height="1"/>
-    <rect x="29" y="7" width="1" height="3"/>
-    <rect x="29" y="11" width="1" height="3"/>
-    <rect x="29" y="25" width="1" height="5"/>
-    <rect x="31" y="8" width="1" height="2"/>
-    <rect x="31" y="11" width="1" height="3"/>
-    <rect x="31" y="7" width="4" height="1"/>
-    <rect x="31" y="10" width="4" height="1"/>
-    <rect x="32" y="24" width="1" height="1"/>
-    <rect x="32" y="26" width="1" height="5"/>
-    <rect x="32" y="25" width="2" height="1"/>
-    <rect x="34" y="26" width="1" height="1"/>
-    <rect x="35" y="8" width="1" height="2"/>
-    <rect x="35" y="27" width="2" height="1"/>
-    <rect x="36" y="24" width="1" height="3"/>
-    <rect x="36" y="28" width="1" height="3"/>
-    <rect x="38" y="25" width="1" height="5"/>
-    <rect x="39" y="30" width="3" height="1"/>
-    <rect x="39" y="24" width="4" height="1"/>
-    <rect x="40" y="3" width="3" height="15"/>
-    <rect x="40" y="27" width="3" height="1"/>
-    <rect x="42" y="28" width="1" height="2"/>
-  </g>
-  <g fill="white">
-    <rect x="45" y="8" width="1" height="1"/>
-  </g>
+<svg width="1118" height="294" viewBox="0 0 1118 294" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_3074_29309)">
+<path d="M823.861 147H787.094V183.75H823.861V147Z" fill="white"/>
+<path d="M1081.23 147H1044.47V183.75H1081.23V147Z" fill="white"/>
+<path d="M1044.47 73.5H1007.7V110.25H1044.47V73.5Z" fill="white"/>
+<path d="M1007.7 110.25H970.931V147H1007.7V110.25Z" fill="white"/>
+<path d="M860.629 183.75H823.861V220.5H860.629V183.75Z" fill="white"/>
+<path d="M1044.47 183.75H1007.7V220.5H1044.47V183.75Z" fill="white"/>
+<path d="M970.93 257.25V294H-0.000183105V36.75H36.7672V257.25H860.628V220.5H897.396V257.25H970.93Z" fill="white"/>
+<path d="M1007.7 220.5H970.931V257.25H1007.7V220.5Z" fill="white"/>
+<path d="M1118 36.75H1081.23V147H1118V36.75Z" fill="white"/>
+<path d="M1081.23 0H970.931V36.75H1081.23V0Z" fill="white"/>
+<path d="M970.931 36.75H897.396V73.5H970.931V36.75Z" fill="white"/>
+<path d="M970.931 36.75V73.5H897.396V36.75H787.094V147H823.861V183.75H860.629V220.5H897.396V257.25H970.931V220.5H1007.7V183.75H1044.47V147H1081.23V36.75H970.931ZM1044.47 110.25H1007.7V147H970.931V110.25H1007.7V73.5H1044.47V110.25Z" fill="#FF2714"/>
+<path d="M897.396 0V36.75H787.094V147H750.326V36.75H36.7672V0H897.396Z" fill="white"/>
+<path d="M300.947 97.999V85.749H215.157V97.999H202.901V195.999H215.157V208.249H300.947V195.999H313.203V97.999H300.947ZM288.692 183.749H227.413V110.249H288.692V183.749Z" fill="white"/>
+<path d="M689.047 97.999V85.749H591.001V208.249H615.512V159.249H689.047V146.999H701.303V97.999H689.047ZM676.791 134.749H615.512V110.249H676.791V134.749Z" fill="white"/>
+<path d="M571.936 85.749V208.249H547.425V159.249H486.146V208.249H461.634V85.749H486.146V134.749H547.425V85.749H571.936Z" fill="white"/>
+<path d="M430.314 97.999V85.749H344.523V97.999H332.268V195.999H344.523V208.249H430.314V195.999H442.57V97.999H430.314ZM418.058 183.749H356.779V110.249H418.058V183.749Z" fill="white"/>
+<path d="M183.837 183.749V208.249H85.7908V183.749H122.558V134.749H98.0466V110.249H110.302V97.999H122.558V85.749H147.07V183.749H183.837Z" fill="white"/>
+</g>
+<defs>
+<clipPath id="clip0_3074_29309">
+<rect width="1118" height="294" fill="white"/>
+</clipPath>
+</defs>
 </svg>
