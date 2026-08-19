@@ -14,14 +14,14 @@ const DAY_DATE = "September 30, 2026";
 const DAY_META = "VIP Boat · Conference · Awards · After Party · 10:00 — 23:00";
 
 const STANDARD_TIER = "Standard";
-// Old price (struck-through) + promo subline. July 1st выделен <strong>
-// чтобы дедлайн читался первым делом.
+// Old price (struck-through) + promo subline. Дедлайн выделен <strong>
+// чтобы читался первым делом.
 const STANDARD_PRICE_OLD = "€400";
 const STANDARD_SUB = (
   <>
     Promo price for early bird
     <br />
-    till <strong>July 1st</strong>
+    till <strong>September 1st</strong>
   </>
 );
 // Footer-комментарий справа от расписания, под билетом. Заполняет пустое
