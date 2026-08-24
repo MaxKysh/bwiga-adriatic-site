@@ -558,6 +558,18 @@
         "name": "Grigory Chikishev",
         "photo": "assets/speakers/speakers/grigory-chikishev.webp",
         "title": "Team Lead and Quantitative Trader at Quantum Brains"
+      },
+      {
+        "slug": "olga-silverman",
+        "name": "Olga Silverman",
+        "photo": "assets/speakers/speakers/olga-silverman.webp",
+        "title": "CEO at Silverman Consult Group. LinkedIn Mentor."
+      },
+      {
+        "slug": "kirill-goncharik",
+        "name": "Kirill Goncharik",
+        "photo": "assets/speakers/speakers/kirill-goncharik.webp",
+        "title": "Co-founder at Kujo AI"
       }
     ],
     "program_status_label": "Program under development",

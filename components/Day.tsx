@@ -1,8 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import content from "@/data/content.json";
-import { mailto } from "@/lib/mailto";
-import { TICKET_BODY, TICKET_SUBJECT } from "@/lib/mail-templates";
+import TicketCheckoutModal from "./TicketCheckoutModal";
 
 // -----------------------------------------------------------------------------
 // Section chrome + a few editorial copy bits not in content.json.
@@ -46,6 +46,9 @@ export default function Day() {
   const standard = content.registration.tickets[0];
   const cryptoNote = "Crypto payment via processor";
   const statusLabel = content.schedule.status_label.replace(/!\s*$/, "");
+  // Модалка checkout'а — открывается кнопкой Get a ticket, закрывается
+  // Esc / backdrop / крестиком (см. TicketCheckoutModal).
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
 
   return (
     <section className="day" id="day" aria-label="The day schedule and tickets">
@@ -109,13 +112,10 @@ export default function Day() {
                 <div className="eye">{STANDARD_EYE}</div>
                 <h4 className="name">{STANDARD_NAME}</h4>
                 <p className="desc">{STANDARD_DESC}</p>
-                <a
+                <button
+                  type="button"
                   className="ticket-btn"
-                  href={mailto(
-                    content.contacts.email,
-                    TICKET_SUBJECT,
-                    TICKET_BODY
-                  )}
+                  onClick={() => setCheckoutOpen(true)}
                 >
                   <span className="ticket-btn-label">
                     {STANDARD_CTA}
@@ -128,7 +128,7 @@ export default function Day() {
                       />
                     </svg>
                   </span>
-                </a>
+                </button>
                 <p className="ticket-note">{cryptoNote}</p>
               </div>
             </article>
@@ -871,6 +871,12 @@ export default function Day() {
           }
         }
       `}</style>
+
+      {/* Checkout-модалка. Рендерится всегда, показывается через `open`.
+          Вне <section> внутри React fragment был бы чище, но чтобы не
+          менять корневой return — держим здесь. Модалка сама использует
+          position: fixed, поэтому вложенность не влияет на layout. */}
+      <TicketCheckoutModal open={checkoutOpen} onClose={() => setCheckoutOpen(false)} />
     </section>
   );
 }
