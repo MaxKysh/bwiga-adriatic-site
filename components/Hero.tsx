@@ -6,12 +6,7 @@ import content from "@/data/content.json";
 import YouTubeModal from "./YouTubeModal";
 import StatuetteSafe from "./StatuetteSafe";
 import { mailto } from "@/lib/mailto";
-import {
-  NOMINATION_BODY,
-  NOMINATION_SUBJECT,
-  WHITELIST_BODY,
-  WHITELIST_SUBJECT,
-} from "@/lib/mail-templates";
+import { NOMINATION_BODY, NOMINATION_SUBJECT } from "@/lib/mail-templates";
 
 // Statuette is wrapped in StatuetteSafe — capability check (reduced-motion,
 // mobile, WebGL availability) + error boundary. На mobile вообще не
@@ -192,14 +187,12 @@ export default function Hero() {
           <p className="substat">{content.hero.tagline_secondary}</p>
 
           <div className="cta-row">
-            <a
-              className="btn btn-primary"
-              href={mailto(
-                content.contacts.email,
-                WHITELIST_SUBJECT,
-                WHITELIST_BODY
-              )}
-            >
+            {/* Primary CTA — теперь ведёт на секцию The Day с билетом. Раньше
+                открывал mailto для whitelist'а, но с запуском online-checkout'а
+                через Custodex смысл сменился: клиент сразу идёт покупать билет,
+                а не спрашивать доступ по почте. Smooth-scroll подцепляется
+                через глобальный anchor-handler в Sidebar. */}
+            <a className="btn btn-primary" href="#day">
               <span className="label">
                 {content.hero.cta_primary.label}
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
