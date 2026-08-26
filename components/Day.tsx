@@ -16,7 +16,7 @@ const DAY_META = "VIP Boat · Conference · Awards · After Party · 10:00 — 2
 const STANDARD_TIER = "Standard";
 // Old price (struck-through) + promo subline. Дедлайн выделен <strong>
 // чтобы читался первым делом.
-const STANDARD_PRICE_OLD = "€400";
+const STANDARD_PRICE_OLD = "$460";
 const STANDARD_SUB = (
   <>
     Promo price for early bird
@@ -92,7 +92,7 @@ export default function Day() {
 
           {/* ---- RIGHT: Tickets ---- */}
           <aside className="day-tickets">
-            {/* Single gold ticket — promo €200 (was €400), full width. */}
+            {/* Single gold ticket — promo $230 (was $460), full width. */}
             <article className="ticket ticket--gold">
               <div className="ticket-stub">
                 <header className="ts-head">

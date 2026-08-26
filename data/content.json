@@ -570,6 +570,12 @@
         "name": "Kirill Goncharik",
         "photo": "assets/speakers/speakers/kirill-goncharik.webp",
         "title": "Co-founder at Kujo AI"
+      },
+      {
+        "slug": "timur-el-gohari",
+        "name": "Timur El-Gohari",
+        "photo": "assets/speakers/speakers/timur-el-gohari.webp",
+        "title": "Founder of NeuroVision"
       }
     ],
     "program_status_label": "Program under development",
@@ -620,9 +626,9 @@
       {
         "slug": "standard",
         "name": "Standard Ticket",
-        "price_display": "€200",
-        "price_value": 200,
-        "price_currency": "EUR",
+        "price_display": "$230",
+        "price_value": 230,
+        "price_currency": "USD",
         "includes": [
           "Conference Hall",
           "Awards Ceremony",
