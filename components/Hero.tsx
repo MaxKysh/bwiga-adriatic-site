@@ -110,10 +110,13 @@ export default function Hero() {
       <div className="hero-grid">
         <div className="hero-rightcol">
           <div className="hero-topright">
+            {/* Раньше здесь красовалась дата/место события 30 Sep, Avala Hotel.
+                После переноса — короткий тизер про Belgrade Spring 2027; детали
+                в модалке (Announcement). */}
             <div className="meta">
-              <b>September 30, 2026</b>
+              <b>See you in Belgrade</b>
               <br />
-              {content.event.venue.short_name} &middot; {content.event.venue.city}
+              Spring 2027
             </div>
           </div>
 
@@ -187,12 +190,11 @@ export default function Hero() {
           <p className="substat">{content.hero.tagline_secondary}</p>
 
           <div className="cta-row">
-            {/* Primary CTA — теперь ведёт на секцию The Day с билетом. Раньше
-                открывал mailto для whitelist'а, но с запуском online-checkout'а
-                через Custodex смысл сменился: клиент сразу идёт покупать билет,
-                а не спрашивать доступ по почте. Smooth-scroll подцепляется
-                через глобальный anchor-handler в Sidebar. */}
-            <a className="btn btn-primary" href="#day">
+            {/* Primary CTA — открывает модалку с объявлением о переносе
+                (Announcement listens on #announcement hash). Раньше вело
+                на #day к оплате, но продажи билетов на паузе до Belgrade
+                Spring 2027. */}
+            <a className="btn btn-primary" href="#announcement">
               <span className="label">
                 {content.hero.cta_primary.label}
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>

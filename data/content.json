@@ -104,8 +104,8 @@
     "tagline_secondary": "Founders and C-level on board. Our attendees are real decision makers!",
     "stats_line": "30 nominations, 30 countries, 30 speakers, 100 companies",
     "cta_primary": {
-      "label": "Get a ticket",
-      "action": "scroll:#day"
+      "label": "Read announcement",
+      "action": "modal:#announcement"
     },
     "cta_secondary": {
       "label": "Submit for a Nomination",

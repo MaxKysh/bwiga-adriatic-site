@@ -1,8 +1,6 @@
 "use client";
 
-import { useState } from "react";
 import content from "@/data/content.json";
-import TicketCheckoutModal from "./TicketCheckoutModal";
 
 // -----------------------------------------------------------------------------
 // Section chrome + a few editorial copy bits not in content.json.
@@ -32,7 +30,9 @@ const STANDARD_FOOTER_NOTE =
 const STANDARD_EYE = "Full event access";
 const STANDARD_NAME = "Conference, Awards & Evening Party";
 const STANDARD_DESC = "Conference hall · Awards ceremony · Evening party.";
-const STANDARD_CTA = "Get a ticket";
+// STANDARD_CTA больше не используется — продажи на паузе, кнопка ведёт на
+// #announcement. См. рендер ниже. Строка сохранена в комментарии как
+// hint для возврата: "Get a ticket".
 const STANDARD_CORNER = "№ Std · 30 Sep";
 
 // Identify the "Awards Ceremony" schedule row case-insensitively so editors
@@ -44,11 +44,11 @@ function isAwardsRow(title: string): boolean {
 export default function Day() {
   const items = content.schedule.items;
   const standard = content.registration.tickets[0];
-  const cryptoNote = "Crypto payment via processor";
   const statusLabel = content.schedule.status_label.replace(/!\s*$/, "");
-  // Модалка checkout'а — открывается кнопкой Get a ticket, закрывается
-  // Esc / backdrop / крестиком (см. TicketCheckoutModal).
-  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  // Продажи билетов на паузе (событие перенесено в Belgrade Spring 2027).
+  // Кнопка на карточке теперь ведёт на #announcement — checkout-модалка
+  // (components/TicketCheckoutModal.tsx) сохранена в коде для будущего
+  // возвращения оплаты, но здесь не рендерится.
 
   return (
     <section className="day" id="day" aria-label="The day schedule and tickets">
@@ -112,13 +112,12 @@ export default function Day() {
                 <div className="eye">{STANDARD_EYE}</div>
                 <h4 className="name">{STANDARD_NAME}</h4>
                 <p className="desc">{STANDARD_DESC}</p>
-                <button
-                  type="button"
-                  className="ticket-btn"
-                  onClick={() => setCheckoutOpen(true)}
-                >
+                {/* Оплата билетов на паузе — событие перенесено в Belgrade
+                    Spring 2027 (см. Announcement). Кнопка ведёт не в
+                    checkout, а на модалку с объявлением. */}
+                <a className="ticket-btn ticket-btn--muted" href="#announcement">
                   <span className="ticket-btn-label">
-                    {STANDARD_CTA}
+                    Ticket sales paused
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
                       <path
                         d="M2 7H12 M8 3L12 7L8 11"
@@ -128,8 +127,8 @@ export default function Day() {
                       />
                     </svg>
                   </span>
-                </button>
-                <p className="ticket-note">{cryptoNote}</p>
+                </a>
+                <p className="ticket-note">See announcement · Belgrade &rsquo;27</p>
               </div>
             </article>
             <p className="day-tickets-foot">{STANDARD_FOOTER_NOTE}</p>
@@ -872,11 +871,6 @@ export default function Day() {
         }
       `}</style>
 
-      {/* Checkout-модалка. Рендерится всегда, показывается через `open`.
-          Вне <section> внутри React fragment был бы чище, но чтобы не
-          менять корневой return — держим здесь. Модалка сама использует
-          position: fixed, поэтому вложенность не влияет на layout. */}
-      <TicketCheckoutModal open={checkoutOpen} onClose={() => setCheckoutOpen(false)} />
     </section>
   );
 }

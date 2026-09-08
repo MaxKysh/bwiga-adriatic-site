@@ -11,7 +11,7 @@ import Counter from "./Counter";
 // don't live in content.json. Dates and category names DO come from JSON.
 // -----------------------------------------------------------------------------
 const AWARDS_MARK = "03";
-const AWARDS_EYEBROW = "28 Nominations · Timeline · Apply";
+const AWARDS_EYEBROW = "28 Nominations · Apply";
 const AWARDS_TAG = "The Awards";
 const META_LABEL = "The 2026 Slate";
 const META_STATS = [
@@ -23,18 +23,14 @@ const META_STATS = [
 const TBA_COUNT = 4;
 const TBA_NAME = "To be announced";
 
-// Pithy display labels for the 4 timeline steps. Dates come from
-// content.competition_timeline[] (May 15 / Sep 15 / Sep 28 / Sep 30).
-// The marketing-shortened labels are kept local so the JSON can stay legalistic.
-const TIMELINE_DISPLAY_LABELS = [
-  "Applications open",
-  "Online voting",
-  "Jury decision",
-  "Awards Night",
-];
-// Map JSON's full label set onto its short display label.
-// Index-aligned to content.competition_timeline[] order.
-const TIMELINE_EYEBROW = "Competition Timeline";
+// NOTE (Belgrade Spring 2027 postponement):
+// Competition timeline block удалён вместе с датами (May 15 / Sep 15 / Sep 28 /
+// Sep 30) — все они были привязаны к перенесённому осеннему событию.
+// Локальные константы TIMELINE_EYEBROW / TIMELINE_DISPLAY_LABELS и локальные
+// activeStepIdx / finalStepIdx / timeline из компонента ниже удалены заодно,
+// чтобы не тащить unused-warnings через lint. JSON (content.competition_timeline)
+// оставлен нетронутым: при возврате секции timeline восстанавливается одним
+// `git revert` этого коммита + возвращённым блоком.
 
 const SUBMIT_LABEL = "Submit your nomination";
 const SUBMIT_NOTE = "Crypto payment via processor";
@@ -83,13 +79,6 @@ export default function Awards() {
   }, []);
 
   const categories = content.nominations.categories;
-  const timeline = content.competition_timeline;
-
-  // The "active" pin starts at "Applications open" (today is well before the
-  // event). Once we have a real deploy date and live JS, this can flip based
-  // on Date.now() — for now hard-code to step 0.
-  const activeStepIdx = 0;
-  const finalStepIdx = timeline.length - 1;
 
   return (
     <section className="awards" id="awards" aria-label="Award nominations">
@@ -139,30 +128,9 @@ export default function Awards() {
           ))}
         </ul>
 
-        {/* Competition timeline */}
-        <div className="awards-timeline" aria-label="Competition timeline">
-          <div className="awards-timeline-head">
-            <div className="awards-timeline-eye">{TIMELINE_EYEBROW}</div>
-          </div>
-          <ol className="awards-timeline-track">
-            {timeline.map((t, i) => {
-              const cls = [
-                "awards-timeline-step",
-                i === activeStepIdx ? "is-active" : "",
-                i === finalStepIdx ? "is-final" : "",
-              ]
-                .filter(Boolean)
-                .join(" ");
-              return (
-                <li key={t.date_iso} className={cls}>
-                  <span className="dot" aria-hidden />
-                  <span className="date">{t.date_display}</span>
-                  <span className="label">{TIMELINE_DISPLAY_LABELS[i] ?? t.label}</span>
-                </li>
-              );
-            })}
-          </ol>
-        </div>
+        {/* Competition timeline снят — Belgrade Spring 2027 postponement.
+            См. NOTE у импортов. Стили .awards-timeline* ниже оставлены,
+            чтобы блок возвращался одним `git revert`. */}
 
         {/* Submit CTA */}
         <div className="awards-submit">

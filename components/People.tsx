@@ -27,7 +27,7 @@ const FEATURED_LABEL = "Jury Chair";
 // акцентную обводку — карточка читается как «не просто участник, а хост»,
 // но не так броско как Jury Chair.
 const SPECIAL_ROLES: Record<string, { label: string; special: string }> = {
-  "samuela-davidova": { label: "Conference Presenter", special: "presenter" },
+  "samuela-davidova": { label: "Conference MC", special: "presenter" },
   "marina-rioni": { label: "Moderator", special: "moderator" },
 };
 
