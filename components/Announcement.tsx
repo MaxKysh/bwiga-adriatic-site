@@ -254,11 +254,10 @@ export default function Announcement() {
           display: block;
           width: 100%;
           height: auto;
-          /* Контейнерный max-height — чтобы на вертикальных экранах постер
-             не съедал всю видимую высоту модалки до прокрутки. */
-          max-height: 320px;
-          object-fit: cover;
-          object-position: center;
+          /* Квадрат показываем целиком, без кропа — постер самодостаточен,
+             а длина модалки всё равно уходит в скролл backdrop'а. */
+          aspect-ratio: 1 / 1;
+          object-fit: contain;
         }
 
         .ann-eyebrow {
@@ -385,9 +384,6 @@ export default function Announcement() {
           }
           .ann-hero {
             margin: -24px -22px 20px;
-          }
-          .ann-hero img {
-            max-height: 260px;
           }
         }
       `}</style>
