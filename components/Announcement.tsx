@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 
 // -----------------------------------------------------------------------------
-// Announcement modal — the "we're moving to Belgrade" notice, delivered as a
-// dismissible overlay on top of the regular site (rather than replacing it).
+// Announcement modal — "we held it online this year, here are the winners,
+// see you in Belgrade 2027" message. Delivered as a dismissible overlay on top
+// of the regular site (rather than replacing it).
 //
 // Show/hide logic:
 //   - Every page load → auto-open after a short delay (lets Preloader clear
@@ -23,6 +24,22 @@ const HASH = "#announcement";
 const OPEN_DELAY_MS = 900; // wait for Preloader fade-out
 
 const CONTACT_EMAIL = "mail@lead-volume.com";
+
+// Winners of the 2026 online celebration. Order matches the editorial
+// list we received from the organizers — do not re-sort alphabetically.
+type Winner = { category: string; name: string; sub?: string };
+const WINNERS: Winner[] = [
+  { category: "iGaming Lady of the Year", name: "Abigail Welch", sub: "editor of iGaming News" },
+  { category: "Best PR Agency", name: "IdolMe Agency" },
+  { category: "Best Game Studio", name: "100HP Gaming" },
+  { category: "iGaming Influencer of the Year", name: "Pavlo Krombet" },
+  { category: "Industry Impact Award", name: "Inna Babich" },
+  { category: "Crypto Lady of the Year", name: "Samuela Davidova" },
+  { category: "Networker of the Year", name: "Marina Rioni" },
+  { category: "Web Studio of the Year", name: "Chipsa" },
+  { category: "Marketing Team of the Year", name: "2PMarketing" },
+  { category: "AI Rising Star", name: "SXIOS Intelligence" },
+];
 
 export default function Announcement() {
   const [open, setOpen] = useState(false);
@@ -98,30 +115,54 @@ export default function Announcement() {
           </svg>
         </button>
 
-        <div className="ann-eyebrow">A message from the team</div>
+        {/* Hero poster — the "BWiGA NFT Online Awards 2026" visual we ran
+            for the online celebration. 1:1 square at ~900×900, served from
+            public/img. Rendered contained so nothing crops. */}
+        <div className="ann-hero">
+          {/* Plain <img> вместо next/image: модалка рендерится по условию
+              и один раз, оптимизация next/image тут не стоит сложности
+              с явной width/height / layout. Файл уже уменьшен до 900×900. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/img/online-awards-2026.jpg"
+            alt="BWiGA NFT Online Awards 2026 — poster"
+            width={900}
+            height={900}
+            loading="eager"
+          />
+        </div>
+
+        <div className="ann-eyebrow">BWiGA Online Awards · 2026</div>
 
         <h2 id="ann-title" className="ann-title">
-          We&rsquo;re moving to Belgrade
+          The community has picked
           <br />
-          <span className="accent">for Spring 2027</span>
+          <span className="accent">its 2026 winners</span>
         </h2>
 
         <div className="ann-body">
           <p>
-            This was not an easy decision. After consulting with our partners,
-            our team, for a number of reasons, decided to move all of our fall
-            events from Montenegro to Serbia until spring 2027.
+            We celebrated our nominees online instead of holding the traditional
+            in-person event in Montenegro. The following industry leaders
+            emerged as our community&rsquo;s favorites in the voting:
           </p>
-          <p>
-            Belgrade is a much more convenient meeting hub for our community,
-            a fact confirmed after the first two events and preparations for
-            the third. Therefore, the strategic decision to move to Belgrade
-            for March next year is based on the needs of our audience and
-            partners, for whom we want to create a more in-depth conference
-            with targeted participants.
-          </p>
+
+          <ul className="ann-winners" aria-label="2026 online winners">
+            {WINNERS.map((w) => (
+              <li key={w.category}>
+                <span className="cat">{w.category}</span>
+                <span className="who">
+                  {w.name}
+                  {w.sub ? <span className="sub"> — {w.sub}</span> : null}
+                </span>
+              </li>
+            ))}
+          </ul>
+
+          <p className="ann-cheers">Our congratulations <span aria-hidden>🥂</span></p>
           <p className="ann-signoff">
-            See you in Serbia in the spring! Thank you for your understanding.
+            See you next time in <strong>Belgrade, Spring 2027</strong> &mdash; on
+            the red carpet, awarding the best of the best in person.
           </p>
         </div>
 
@@ -142,7 +183,7 @@ export default function Announcement() {
           backdrop-filter: blur(6px);
           -webkit-backdrop-filter: blur(6px);
           display: grid;
-          place-items: center;
+          place-items: start center;
           padding: 20px;
           overflow-y: auto;
           animation: annFadeIn 260ms var(--ease-soft);
@@ -150,7 +191,8 @@ export default function Announcement() {
         .ann {
           position: relative;
           width: 100%;
-          max-width: 560px;
+          max-width: 620px;
+          margin: auto 0;
           background:
             radial-gradient(
               ellipse 80% 60% at 50% 0%,
@@ -160,7 +202,7 @@ export default function Announcement() {
             linear-gradient(180deg, #14192a 0%, #0a0e1a 100%);
           border: 1px solid rgba(255, 255, 255, 0.1);
           border-radius: 14px;
-          padding: 44px clamp(28px, 4vw, 44px) 36px;
+          padding: 32px clamp(28px, 4vw, 44px) 36px;
           color: var(--paper-0);
           box-shadow: 0 30px 70px rgba(0, 0, 0, 0.7),
             0 0 0 1px rgba(79, 161, 220, 0.1) inset;
@@ -182,17 +224,41 @@ export default function Announcement() {
           width: 36px;
           height: 36px;
           border-radius: 50%;
-          background: rgba(255, 255, 255, 0.06);
+          background: rgba(255, 255, 255, 0.3);
           border: 0;
-          color: rgba(255, 255, 255, 0.75);
+          color: #fff;
           cursor: pointer;
           display: grid;
           place-items: center;
+          z-index: 2;
+          backdrop-filter: blur(4px);
+          -webkit-backdrop-filter: blur(4px);
           transition: background 180ms var(--ease-soft), color 180ms var(--ease-soft);
         }
         .ann-close:hover {
-          background: rgba(255, 255, 255, 0.14);
+          background: rgba(255, 255, 255, 0.55);
           color: var(--paper-0);
+        }
+
+        /* ---------- Hero poster ---------- */
+        .ann-hero {
+          /* Pull edge-to-edge within the padded modal so the poster has
+             presence; keep rounded top corners aligned with modal radius. */
+          margin: -32px calc(-1 * clamp(28px, 4vw, 44px)) 24px;
+          border-top-left-radius: 14px;
+          border-top-right-radius: 14px;
+          overflow: hidden;
+          background: #0a0e1a;
+        }
+        .ann-hero img {
+          display: block;
+          width: 100%;
+          height: auto;
+          /* Контейнерный max-height — чтобы на вертикальных экранах постер
+             не съедал всю видимую высоту модалки до прокрутки. */
+          max-height: 320px;
+          object-fit: cover;
+          object-position: center;
         }
 
         .ann-eyebrow {
@@ -223,7 +289,7 @@ export default function Announcement() {
         .ann-body {
           display: flex;
           flex-direction: column;
-          gap: 14px;
+          gap: 20px;
           text-align: left;
           font-family: var(--font-inter);
           font-size: 15px;
@@ -232,10 +298,57 @@ export default function Announcement() {
           text-wrap: pretty;
         }
         .ann-body p { margin: 0; }
-        .ann-signoff {
-          margin-top: 6px !important;
+
+        /* ---------- Winners list ----------
+           Each row: eyebrow-styled category above the winner. Dividers
+           hairline-faint so the list reads as credits, not a table. */
+        .ann-winners {
+          list-style: none;
+          margin: 2px 0;
+          padding: 0;
+          display: flex;
+          flex-direction: column;
+          border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .ann-winners li {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+          padding: 12px 0;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .ann-winners .cat {
+          font-size: var(--fs-micro);
+          font-weight: 600;
+          letter-spacing: 0.16em;
+          text-transform: uppercase;
+          color: rgba(255, 255, 255, 0.48);
+          line-height: 1.2;
+        }
+        .ann-winners .who {
+          font-size: 16px;
+          line-height: 1.35;
           color: var(--paper-0);
           font-weight: 500;
+        }
+        .ann-winners .who .sub {
+          color: rgba(255, 255, 255, 0.6);
+          font-weight: 400;
+          font-size: 14px;
+        }
+
+        .ann-cheers {
+          margin-top: 2px !important;
+          color: var(--paper-0);
+          font-weight: 500;
+        }
+        .ann-signoff {
+          color: var(--paper-0);
+          font-weight: 400;
+        }
+        .ann-signoff strong {
+          color: var(--bwiga-blue-bright);
+          font-weight: 600;
         }
 
         .ann-contact {
@@ -264,6 +377,18 @@ export default function Announcement() {
         .ann-contact-link:hover {
           color: var(--bwiga-blue-bright);
           border-color: var(--bwiga-blue-bright);
+        }
+
+        @media (max-width: 520px) {
+          .ann {
+            padding: 24px 22px 28px;
+          }
+          .ann-hero {
+            margin: -24px -22px 20px;
+          }
+          .ann-hero img {
+            max-height: 260px;
+          }
         }
       `}</style>
     </div>
